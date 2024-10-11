@@ -1,2 +1,2 @@
 # DataEngineeringProjects
-This repository contains 4 data engineering projects designed for university coursework.
+This repository contains 4 data engineering projects from the Data Engineering course at Aalen University
