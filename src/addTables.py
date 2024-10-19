@@ -66,6 +66,41 @@ CREATE TABLE IF NOT EXISTS actors (
 )
 ''')
 
+# Movies
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS movies (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    release_year INTEGER,
+    rating REAL,
+    genre_id INTEGER,
+    director_id INTEGER,
+    FOREIGN KEY(genre_id) REFERENCES genres(id),
+    FOREIGN KEY(director_id) REFERENCES directors(id)
+)
+''')
+
+# Series
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS series (
+    id INTEGER PRIMARY KEY,
+    season_count INTEGER,
+    movie_id INTEGER,
+    FOREIGN KEY(movie_id) REFERENCES movies(id)
+)
+''')
+
+# Episodes
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS episodes (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    season INTEGER,
+    episode_number INTEGER,
+    series_id INTEGER,
+    FOREIGN KEY(series_id) REFERENCES series(id)
+)
+''')
 
 database.commit()
 database.close()
