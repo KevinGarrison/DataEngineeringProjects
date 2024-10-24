@@ -38,19 +38,54 @@ class Payment(Base):
     def __repr__(self):
         return f"<Payment(amount={self.amount}, method={self.payment_method})>"
 
+
+class UserType(PyEnum):
+    MAIN_USER = "Main User"
+    OTHER_USER = "Other User"
+
+
 class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False)
-    email = Column(String(50), nullable = False)
+    email = Column(String(50), nullable=False)
+    user_type = Column(Enum(UserType), nullable=False)
+
+    account = relationship('Account', back_populates='user', uselist=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': user_type  # This will determine which subclass to use
+    }
 
     def __repr__(self):
         return f"<User(username={self.username}, email={self.email})>"
-    
 
+
+# MainUser class
 class MainUser(User):
-    __tablename__ = 'mainuser'
+    __tablename__ = 'main_users'
+    
+    id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': UserType.MAIN_USER  # Specify the identity for this subclass
+    }
+
+    # Additional attributes specific to MainUser
+    additional_attribute = Column(String)
+
+
+# OtherUser class
+class OtherUser(User):
+    __tablename__ = 'other_users'
+    
+    id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': UserType.OTHER_USER  # Specify the identity for this subclass
+    }
 
 
 
