@@ -29,7 +29,7 @@ class Payment(Base):
     id = Column(Integer, primary_key=True)
     iban = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)
-    subscription_type = Column(Enum(SubscriptionType), nullable=False)
+    subscription_type = Column(PyEnum(SubscriptionType), nullable=False)
     account_id = Column(Integer, ForeignKey('accounts.id'))
 
     # Relationship back to Account
@@ -50,7 +50,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False)
-    user_type = Column(Enum(UserType), nullable=False)
+    user_type = Column(PyEnum(UserType), nullable=False)
 
     account = relationship('Account', back_populates='user', uselist=False)
 

@@ -23,7 +23,8 @@ def setup(database_name:str):
     engine = create_engine(f'sqlite:///{database_name}')
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
-    return Session(), engine
+    session = Session()
+    return session, engine
 
 
 def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
@@ -52,35 +53,35 @@ def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool
     add_content_to_database('ACCOUNT', username='johndoe', age=28, balance=1000.50)
     '''
     match condition:
-        case '':
+        case 'accounts':
             add_account(kwargs)
-        case '':
+        case 'payments':
             add_payment(kwargs)
-        case '':
+        case 'users':
             add_user(kwargs)
-        case '':
+        case 'main_users':
             add_main_user(kwargs)
-        case '':
+        case 'other_users':
             add_other_user(kwargs)
-        case '':
+        case 'subscriptions':
             add_subscription(kwargs)
-        case '':
+        case 'reviews':
             add_review(kwargs)
-        case '':
+        case 'cast':
             add_cast(kwargs)
-        case '':
+        case 'directors':
             add_director(kwargs)
-        case '':
+        case 'actors':
             add_actor(kwargs)
-        case '':
+        case 'media':
             add_media(kwargs)
-        case '':
+        case 'movie':
             add_movie(kwargs)
-        case '':
+        case 'series':
             add_series(kwargs)
-        case '':
+        case 'episodes':
             add_episode(kwargs)
-        case '':
+        case 'watchlists':
             add_watchlist(kwargs)
 
 def remove_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
@@ -105,35 +106,35 @@ def remove_content(condition:str, **kwargs: Union[str, int, float, list, dict, b
     remove_content_from_database('ACCOUNT', username='johndoe', age=28)
     '''
     match condition:
-        case '':
+        case 'accounts':
             remove_account(kwargs)
-        case '':
+        case 'payments':
             remove_payment(kwargs)
-        case '':
+        case 'users':
             remove_user(kwargs)
-        case '':
+        case 'main_users':
             remove_main_user(kwargs)
-        case '':
+        case 'other_users':
             remove_other_user(kwargs)
-        case '':
+        case 'subscriptions':
             remove_subscription(kwargs)
-        case '':
+        case 'reviews':
             remove_review(kwargs)
-        case '':
+        case 'cast':
             remove_cast(kwargs)
-        case '':
+        case 'directors':
             remove_director(kwargs)
-        case '':
+        case 'actors':
             remove_actor(kwargs)
-        case '':
+        case 'media':
             remove_media(kwargs)
-        case '':
+        case 'movie':
             remove_movie(kwargs)
-        case '':
+        case 'series':
             remove_series(kwargs)
-        case '':
+        case 'episodes':
             remove_episode(kwargs)
-        case '':
+        case 'watchlists':
             remove_watchlist(kwargs)
 
 def add_account():
