@@ -3,14 +3,14 @@ from sqlalchemy.orm import sessionmaker
 from typing import Union
 import sqlite3
 # Baseclass and Classes
-from classes import (
+from classes_1 import (
     Base,
     Account,
     Payment,
     User,
     MainUser,
     OtherUser,
-    Subscription,
+    #Subscription,
     Review,
     Cast,
     Director,
@@ -83,8 +83,8 @@ def add_content(session, condition:str, **kwargs: Union[str, int, float, list, d
                 add_main_user(session, **kwargs)
             case 'other_users':
                 add_other_user(session, **kwargs)
-            case 'subscriptions':
-                add_subscription(session, **kwargs)
+            #case 'subscriptions':
+             #   add_subscription(session, **kwargs)
             case 'reviews':
                 add_review(session, **kwargs)
             case 'cast':
@@ -144,8 +144,8 @@ def remove_content(session, condition:str, id:int):
             remove_main_user(session, id)
         case 'other_users':
             remove_other_user(session, id)
-        case 'subscriptions':
-            remove_subscription(session, id)
+        #case 'subscriptions':
+         #   remove_subscription(session, id)
         case 'reviews':
             remove_review(session, id)
         case 'cast':
@@ -193,10 +193,10 @@ def add_other_user(session, **kwargs):
     session.add(other_user)
     session.commit()
 
-def add_subscription(session, **kwargs):
-    subscription = Subscription(**kwargs)
-    session.add(subscription)
-    session.commit()
+#def add_subscription(session, **kwargs):
+ #   subscription = Subscription(**kwargs)
+  #  session.add(subscription)
+   # session.commit()
 
 def add_review(session, **kwargs):
     review = Review(**kwargs)
@@ -275,11 +275,11 @@ def remove_other_user(session, id:int):
         session.delete(other_user)
         session.commit()
 
-def remove_subscription(session, id:int):
-    subscription = session.query(Subscription).get(id)
-    if subscription:
-        session.delete(subscription)
-        session.commit()
+#def remove_subscription(session, id:int):
+ #   subscription = session.query(Subscription).get(id)
+  #  if subscription:
+   #     session.delete(subscription)
+    #    session.commit()
 
 def remove_review(session, id:int):
     review = session.query(Review).get(id)
