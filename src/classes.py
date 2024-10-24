@@ -1,10 +1,42 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, REAL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from enum import Enum as PyEnum
 
 
 Base = declarative_base()
 
+class Account(Base):
+    __tablename__ = 'accounts'
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    payment_id = Column(Integer, ForeignKey('payments.id'))
+
+    user = relationship('User', back_populates='account')
+    payments = relationship('Payment', back_populates='account', cascade="all, delete-orphan")
+
+
+class SubscriptionType(PyEnum):
+    MONTHLY = "Monthly"
+    YEARLY = "Yearly"
+    TEST = "Test"
+
+
+class Payment(Base):
+    __tablename__ = 'payments'
+    
+    id = Column(Integer, primary_key=True)
+    iban = Column(Integer, nullable=False)
+    price = Column(Float, nullable=False)
+    subscription_type = Column(Enum(SubscriptionType), nullable=False)
+    account_id = Column(Integer, ForeignKey('accounts.id'))
+
+    # Relationship back to Account
+    account = relationship('Account', back_populates='payments')
+
+    def __repr__(self):
+        return f"<Payment(amount={self.amount}, method={self.payment_method})>"
 
 class User(Base):
     __tablename__ = 'users'
@@ -16,6 +48,11 @@ class User(Base):
     def __repr__(self):
         return f"<User(username={self.username}, email={self.email})>"
     
+
+class MainUser(User):
+    __tablename__ = 'mainuser'
+
+
 
 class Subscription(Base):
     __tablename__ = 'subscriptions'
@@ -100,17 +137,11 @@ class Media(Base):
     title = Column(String, nullable=False)
     release_year = Column(Integer)
     rating = Column(Float)
-    # Liste 
-    genre = Column()
-    director_id = Column(Integer, ForeignKey('directors.id'))
-    actor_id = Column(Integer, ForeignKey('actors.id'))
+    genre = Column(String(200))
     
     # Relationships
-    director = relationship('Director', back_populates='movies')
-    reviews = relationship('Review', back_populates='movie')
-    watchlists = relationship('Watchlist', back_populates='movie')
-    series = relationship('Series', back_populates='movie')
-    
+    cast = relationship('Cast', back_populates='media')
+    reviews = relationship()
     # Column to determine the type of media (movie or series)
     media_type = Column(String(50))
     
@@ -121,6 +152,7 @@ class Media(Base):
 
 # Subclass for Movie (no additional attributes needed)
 class Movie(Media):
+
     __mapper_args__ = {
         'polymorphic_identity': 'movie'  # Set the polymorphic identity to 'movie'
     }
@@ -131,10 +163,26 @@ class Series(Media):
     
     id = Column(Integer, ForeignKey('media.id'), primary_key=True)
     season_count = Column(Integer)  # Additional attribute specific to series
+    episodes = relationship('Episode', back_populates='series', cascade="all, delete-orphan")
     
     __mapper_args__ = {
-        'polymorphic_identity': 'series'  # Set the polymorphic identity to 'series'
+        'polymorphic_identity': 'series'
     }
+
+# Episodes of a Series
+class Episode(Base):
+    __tablename__ = 'episodes'
+    
+    episode_id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False)
+    episode_number = Column(Integer, nullable=False)
+    series_id = Column(Integer, ForeignKey('series.id'))  # Link to the Series
+    
+    # Relationship back to the series
+    series = relationship('Series', back_populates='episodes')
+
+    def __repr__(self):
+        return f"<Episode(title={self.title}, episode_number={self.episode_number})>"
 
 
 class Watchlist(Base):
@@ -150,40 +198,3 @@ class Watchlist(Base):
 
     def __repr__(self):
         return f"<Watchlist(user={self.user.username}, movie={self.movie.title})>"
-
-
-
-    
-
-class Movie(Base):
-    __tablename__ = 'movies'
-    
-    id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
-    release_year = Column(Integer)
-    rating = Column(REAL)
-    genre_id = Column(Integer, ForeignKey('genres.id'))
-    director_id = Column(Integer, ForeignKey('directors.id'))
-    
-    # Relationships
-    director = relationship('Director', back_populates='movies')
-    reviews = relationship('Review', back_populates='movie')
-    watchlists = relationship('Watchlist', back_populates='movie')
-    series = relationship('Series', back_populates='movie')
-    
-    def __repr__(self):
-        return f"<Movie(title={self.title}, genre={self.genre}, director={self.director}, rating={self.rating})>"
-
-
-class Movie(Base):
-    __tablename__ = 'movies'
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String(255), nullable=False)
-    genre = Column(String(50), nullable=False)
-    director = Column(String(100))
-    release_date = Column(Date)
-    rating = Column(Float)
-    
-    def __repr__(self):
-        return f"<Movie(title={self.title}, genre={self.genre}, director={self.director}, rating={self.rating})>"
