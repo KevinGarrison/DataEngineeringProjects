@@ -23,11 +23,13 @@ def setup(database_name:str):
     engine = create_engine(f'sqlite:///{database_name}')
     #Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
-    return Session()
+    return Session(), engine
 
+def add_content():
+    pass
 
 def add_genre():
-    
+    pass
 
 def add_movie():
     pass

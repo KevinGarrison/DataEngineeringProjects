@@ -1,19 +1,21 @@
 import sqlite3
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, REAL
+from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker
+from utils import setup
 
+database = 'database.db'
 
 try:
-    con = sqlite3.connect('db_project_1.db')
-    cur = con.cursor()
-    engine = create_engine('sqlite:///db_project_1.db')
-    connection = engine.connect()
+    session = setup(database)
+    
+
 except sqlite3.Error as e:
+    session.rollback()
     print(f"An error occurred: {e}")
 finally:
-    if con:
-        con.close()
+    if session:
+        .close()
     if connection:
         connection.close()
 
