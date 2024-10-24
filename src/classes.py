@@ -1,9 +1,48 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, REAL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from enum import Enum as PyEnum
 
 
 Base = declarative_base()
+
+class Account(Base):
+    __tablename__ = 'accounts'
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    payment_id = Column(Integer, ForeignKey('payments.id'))
+
+    user = relationship('User', back_populates='account')
+    payments = relationship('Payment', back_populates='account', cascade="all, delete-orphan")
+    reviews = relationship('Review', back_populates='account', cascade="all, delete-orphan")
+
+
+class SubscriptionType(PyEnum):
+    MONTHLY = "Monthly"
+    YEARLY = "Yearly"
+    TEST = "Test"
+
+
+class Payment(Base):
+    __tablename__ = 'payments'
+    
+    id = Column(Integer, primary_key=True)
+    iban = Column(Integer, nullable=False)
+    price = Column(Float, nullable=False)
+    subscription_type = Column(Enum(SubscriptionType), nullable=False)
+    account_id = Column(Integer, ForeignKey('accounts.id'))
+
+    # Relationship back to Account
+    account = relationship('Account', back_populates='payments')
+
+    def __repr__(self):
+        return f"<Payment(amount={self.amount}, method={self.payment_method})>"
+
+
+class UserType(PyEnum):
+    MAIN_USER = "Main User"
+    OTHER_USER = "Other User"
 
 
 class User(Base):
@@ -11,25 +50,41 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False)
-    email = Column(String(50), nullable = False)
+    email = Column(String(50), nullable=False)
+    user_type = Column(Enum(UserType), nullable=False)
+
+    account = relationship('Account', back_populates='user', uselist=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': user_type  # This will determine which subclass to use
+    }
 
     def __repr__(self):
         return f"<User(username={self.username}, email={self.email})>"
-    
 
-class Subscription(Base):
-    __tablename__ = 'subscriptions'
+
+class MainUser(User):
+    __tablename__ = 'main_users'
     
-    id = Column(Integer, primary_key=True)
-    subscription_type = Column(String(20), nullable=False)
-    start_date = Column(Date)
-    end_date = Column(Date)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     
-    # Relationship (assuming a relationship with a User class)
-    user = relationship('User', back_populates='subscriptions')
-    def __repr__(self):
-        return f"<Subscription(type={self.subscription_type}, start={self.start_date}, end={self.end_date}, user={self.user_id})>"
+    __mapper_args__ = {
+        'polymorphic_identity': UserType.MAIN_USER  # Specify the identity for this subclass
+    }
+
+    # Additional attributes specific to MainUser
+    additional_attribute = Column(String)
+
+
+class OtherUser(User):
+    __tablename__ = 'other_users'
+    
+    id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': UserType.OTHER_USER  # Specify the identity for this subclass
+    }
 
 
 class Review(Base):
@@ -39,58 +94,47 @@ class Review(Base):
     rating = Column(Float)
     comment = Column(String(300))
     media_id = Column(Integer, ForeignKey('movies.id'))
-    user_id = Column(Integer, ForeignKey('users.id'))
-    
-    # Relationships
+    account_id = Column(Integer, ForeignKey('accounts.id'))
+
     media = relationship('Media', back_populates='reviews')
-    user = relationship('User', back_populates='reviews')
+    account = relationship('Account', back_populates='reviews')
 
     def __repr__(self):
-        return f"<Rating(rating={self.rating}, comment={self.comment}, movie={self.media.title}, user={self.user.username})>"
-    
+        return f"<Rating(rating={self.rating}, comment={self.comment}, movie={self.media.title}, user={self.account.user.username})>"
 
-class Cast(Base):
-    __tablename__ = 'cast'
+
+class Watchlist(Base):
+    __tablename__ = 'watchlists'
     
     id = Column(Integer, primary_key=True)
-    name = Column(String(200), nullable=False)
-
-    __mapper_args__ = {
-        'polymorphic_on': 'type',
-        'polymorphic_identity': 'cast'
-    }
-
-
-class Director(Cast):
-    __tablename__ = 'directors'
+    #user_id = Column(Integer, ForeignKey('users.id'))
+    account_id = Column(Integer, ForeignKey('accounts.id'))
+    media_id = Column(Integer, ForeignKey('movies.id'))
     
-    id = Column(Integer, ForeignKey('cast.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'director'  # Identity for Director subclass
-    }
-    
-    # Relationship to movies (directed by a Director)
-    meida = relationship('Media', back_populates='director')
+    #user = relationship('User', back_populates='watchlists')
+    account = relationship('Account', back_populates='watchlists')
+    media = relationship('Media', back_populates='watchlists')
 
     def __repr__(self):
-        return f"<Director(name={self.name})>"
+        return f"<Watchlist(user={self.account.user.username}, movie={self.media.movie.title})>"
 
 
-class Actor(Base):
-    __tablename__ = 'actors'
+class Cast(Base):
+    __tablename__ = 'casts'
     
-    id = Column(Integer, ForeignKey('cast.id'), primary_key=True)
+    id = Column(Integer, primary_key=True)
+    description = Column(String)
+    media_id = Column(Integer, ForeignKey('media.id'))  # Foreign key to Media
+    actor_names = Column(String, nullable=False)  # Actor's name as a simple attribute
+    director_name = Column(String, nullable=False)  # Director's name as a simple attribute
 
-    __mapper_args__ = {
-        'polymorphic_identity': 'actor'  # Identity for Director subclass
-    }
-    
-    # Relationship to movies (directed by a Director)
-    media = relationship('Media', back_populates='actor')
+    # Relationships
+    media = relationship('Media', back_populates='cast')
 
-    def __repr__(self):
-        return f"<Actor(name={self.name})>"
+
+class MediaType(Enum):
+    MOVIE = "Movie"
+    SERIES = "Series"
 
 
 class Media(Base):
@@ -100,19 +144,12 @@ class Media(Base):
     title = Column(String, nullable=False)
     release_year = Column(Integer)
     rating = Column(Float)
-    # Liste 
-    genre = Column()
-    director_id = Column(Integer, ForeignKey('directors.id'))
-    actor_id = Column(Integer, ForeignKey('actors.id'))
+    genre = Column(String(200))
+    media_type = Column(Enum(MediaType), nullable=False)
     
     # Relationships
-    director = relationship('Director', back_populates='movies')
-    reviews = relationship('Review', back_populates='movie')
-    watchlists = relationship('Watchlist', back_populates='movie')
-    series = relationship('Series', back_populates='movie')
-    
-    # Column to determine the type of media (movie or series)
-    media_type = Column(String(50))
+    cast = relationship('Cast', back_populates='media')
+    reviews = relationship()
     
     __mapper_args__ = {
         'polymorphic_on': media_type,  # Use media_type to distinguish between subclasses
@@ -121,8 +158,9 @@ class Media(Base):
 
 # Subclass for Movie (no additional attributes needed)
 class Movie(Media):
+
     __mapper_args__ = {
-        'polymorphic_identity': 'movie'  # Set the polymorphic identity to 'movie'
+        'polymorphic_identity': MediaType.MOVIE  # Set the polymorphic identity to 'movie'
     }
 
 # Subclass for Series (with additional attributes for Series)
@@ -131,59 +169,25 @@ class Series(Media):
     
     id = Column(Integer, ForeignKey('media.id'), primary_key=True)
     season_count = Column(Integer)  # Additional attribute specific to series
+    episodes = relationship('Episode', back_populates='series', cascade="all, delete-orphan")
     
     __mapper_args__ = {
-        'polymorphic_identity': 'series'  # Set the polymorphic identity to 'series'
+        'polymorphic_identity': MediaType.SERIES
     }
 
-
-class Watchlist(Base):
-    __tablename__ = 'watchlists'
+# Episodes of a Series
+class Episode(Base):
+    __tablename__ = 'episodes'
     
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    movie_id = Column(Integer, ForeignKey('movies.id'))
-    
-    # Relationships
-    user = relationship('User', back_populates='watchlists')
-    movie = relationship('Movie', back_populates='watchlists')
-
-    def __repr__(self):
-        return f"<Watchlist(user={self.user.username}, movie={self.movie.title})>"
-
-
-
-    
-
-class Movie(Base):
-    __tablename__ = 'movies'
-    
-    id = Column(Integer, primary_key=True)
+    episode_id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
-    release_year = Column(Integer)
-    rating = Column(REAL)
-    genre_id = Column(Integer, ForeignKey('genres.id'))
-    director_id = Column(Integer, ForeignKey('directors.id'))
+    episode_number = Column(Integer, nullable=False)
+    series_id = Column(Integer, ForeignKey('series.id'))  # Link to the Series
     
-    # Relationships
-    director = relationship('Director', back_populates='movies')
-    reviews = relationship('Review', back_populates='movie')
-    watchlists = relationship('Watchlist', back_populates='movie')
-    series = relationship('Series', back_populates='movie')
-    
+    # Relationship back to the series
+    series = relationship('Series', back_populates='episodes')
+
     def __repr__(self):
-        return f"<Movie(title={self.title}, genre={self.genre}, director={self.director}, rating={self.rating})>"
+        return f"<Episode(title={self.title}, episode_number={self.episode_number})>"
 
 
-class Movie(Base):
-    __tablename__ = 'movies'
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String(255), nullable=False)
-    genre = Column(String(50), nullable=False)
-    director = Column(String(100))
-    release_date = Column(Date)
-    rating = Column(Float)
-    
-    def __repr__(self):
-        return f"<Movie(title={self.title}, genre={self.genre}, director={self.director}, rating={self.rating})>"
