@@ -1,8 +1,27 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from classes import Base 
 from typing import Union
 import sqlite3
+# Baseclass and Classes
+from classes import (
+    Base,
+    Account,
+    Payment,
+    User,
+    MainUser,
+    OtherUser,
+    Subscription,
+    Review,
+    Cast,
+    Director,
+    Actor,
+    Media,
+    Movie,
+    Series,
+    Episode,
+    Watchlist,
+)
+
 
 # Setup Database and Sessionmaker 
 def setup(database_name:str):
@@ -26,8 +45,8 @@ def setup(database_name:str):
     session = Session()
     return session, engine
 
-
-def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
+# Function for adding content to the tables
+def add_content(session, condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
     '''
     Adds content to the SQLite database. 
     Calls the individual functions for adding content. 
@@ -52,39 +71,48 @@ def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool
     --------
     add_content_to_database('ACCOUNT', username='johndoe', age=28, balance=1000.50)
     '''
-    match condition:
-        case 'accounts':
-            add_account(kwargs)
-        case 'payments':
-            add_payment(kwargs)
-        case 'users':
-            add_user(kwargs)
-        case 'main_users':
-            add_main_user(kwargs)
-        case 'other_users':
-            add_other_user(kwargs)
-        case 'subscriptions':
-            add_subscription(kwargs)
-        case 'reviews':
-            add_review(kwargs)
-        case 'cast':
-            add_cast(kwargs)
-        case 'directors':
-            add_director(kwargs)
-        case 'actors':
-            add_actor(kwargs)
-        case 'media':
-            add_media(kwargs)
-        case 'movie':
-            add_movie(kwargs)
-        case 'series':
-            add_series(kwargs)
-        case 'episodes':
-            add_episode(kwargs)
-        case 'watchlists':
-            add_watchlist(kwargs)
+    try:
+        match condition:
+            case 'accounts':
+                add_account(session, **kwargs)
+            case 'payments':
+                add_payment(session, **kwargs)
+            case 'users':
+                add_user(session, **kwargs)
+            case 'main_users':
+                add_main_user(session, **kwargs)
+            case 'other_users':
+                add_other_user(session, **kwargs)
+            case 'subscriptions':
+                add_subscription(session, **kwargs)
+            case 'reviews':
+                add_review(session, **kwargs)
+            case 'cast':
+                add_cast(session, **kwargs)
+            case 'directors':
+                add_director(session, **kwargs)
+            case 'actors':
+                add_actor(session, **kwargs)
+            case 'media':
+                add_media(session, **kwargs)
+            case 'movie':
+                add_movie(session, **kwargs)
+            case 'series':
+                add_series(session, **kwargs)
+            case 'episodes':
+                add_episode(session, **kwargs)
+            case 'watchlists':
+                add_watchlist(session, **kwargs)
+            case _:
+                raise ValueError(f"Invalid condition '{condition}' specified for content insertion.")
+    
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise 
 
-def remove_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
+
+# Function for removing content from the tables
+def remove_content(session, condition:str, id:int):
     '''
     Removes content from the SQLite database.
     Calls the individual functions for removing content. 
@@ -107,128 +135,202 @@ def remove_content(condition:str, **kwargs: Union[str, int, float, list, dict, b
     '''
     match condition:
         case 'accounts':
-            remove_account(kwargs)
+            remove_account(session, id)
         case 'payments':
-            remove_payment(kwargs)
+            remove_payment(session, id)
         case 'users':
-            remove_user(kwargs)
+            remove_user(session, id)
         case 'main_users':
-            remove_main_user(kwargs)
+            remove_main_user(session, id)
         case 'other_users':
-            remove_other_user(kwargs)
+            remove_other_user(session, id)
         case 'subscriptions':
-            remove_subscription(kwargs)
+            remove_subscription(session, id)
         case 'reviews':
-            remove_review(kwargs)
+            remove_review(session, id)
         case 'cast':
-            remove_cast(kwargs)
+            remove_cast(session, id)
         case 'directors':
-            remove_director(kwargs)
+            remove_director(session, id)
         case 'actors':
-            remove_actor(kwargs)
+            remove_actor(session, id)
         case 'media':
-            remove_media(kwargs)
+            remove_media(session, id)
         case 'movie':
-            remove_movie(kwargs)
+            remove_movie(session, id)
         case 'series':
-            remove_series(kwargs)
+            remove_series(session, id)
         case 'episodes':
-            remove_episode(kwargs)
+            remove_episode(session, id)
         case 'watchlists':
-            remove_watchlist(kwargs)
+            remove_watchlist(session, id)
+        case _:
+            raise ValueError(f"Invalid condition '{condition}' specified for content removal.")
 
-def add_account():
-    pass
+# Instance functions     
+def add_account(session, **kwargs):
+    account = Account(**kwargs)
+    session.add(account)
+    session.commit()
 
-def add_payment():
-    pass
+def add_payment(session, **kwargs):
+    payment = Payment(**kwargs)
+    session.add(payment)
+    session.commit()    
 
-def add_user():
-    pass
+def add_user(session, **kwargs):
+    user = User(**kwargs)
+    session.add(user)
+    session.commit()
 
-def add_main_user():
-    pass
+def add_main_user(session, **kwargs):
+    main_user = MainUser(**kwargs)
+    session.add(main_user)
+    session.commit()
 
-def add_other_user():
-    pass
+def add_other_user(session, **kwargs):
+    other_user = OtherUser(**kwargs)
+    session.add(other_user)
+    session.commit()
 
-def add_subscription():
-    pass
+def add_subscription(session, **kwargs):
+    subscription = Subscription(**kwargs)
+    session.add(subscription)
+    session.commit()
 
-def add_review():
-    pass
+def add_review(session, **kwargs):
+    review = Review(**kwargs)
+    session.add(review)
+    session.commit()
 
-def add_cast():
-    pass
+def add_cast(session, **kwargs):
+    cast = Cast(**kwargs)
+    session.add(cast)
+    session.commit()
 
-def add_director():
-    pass
+def add_director(session, **kwargs):
+    director = Director(**kwargs)
+    session.add(director)
+    session.commit()
 
-def add_actor():
-    pass
+def add_actor(session, **kwargs):
+    actor = Actor(**kwargs)
+    session.add(actor)
+    session.commit()
 
-def add_media():
-    pass
+def add_media(session, **kwargs):
+    media = Media(**kwargs)
+    session.add(media)
+    session.commit()
 
-def add_movie():
-    pass
+def add_movie(session, **kwargs):
+    movie = Movie(**kwargs)
+    session.add(movie)
+    session.commit()
 
-def add_series():
-    pass
+def add_series(session, **kwargs):
+    series = Series(**kwargs)
+    session.add(series)
+    session.commit()
 
-def add_episode():
-    pass
+def add_episode(session, **kwargs):
+    episode = Episode(**kwargs)
+    session.add(episode)
+    session.commit()
 
-def add_watchlist():
-    pass
-
-
-def remove_account():
-    pass
-
-def remove_payment():
-    pass
-
-def remove_user():
-    pass
-
-def remove_main_user():
-    pass
-
-def remove_other_user():
-    pass
-
-def remove_subscription():
-    pass
-
-def remove_review():
-    pass
-
-def remove_cast():
-    pass
-
-def remove_director():
-    pass
-
-def remove_actor():
-    pass
-
-def remove_media():
-    pass
-
-def remove_movie():
-    pass
-
-def remove_series():
-    pass
-
-def remove_episode():
-    pass
-
-def remove_watchlist():
-    pass
+def add_watchlist(session, **kwargs):
+    watchlist = Watchlist(**kwargs)
+    session.add(watchlist)
+    session.commit()
 
 
+# Remove functions
+def remove_account(session, id:int):
+    account = session.query(Account).get(id)
+    if account:
+        session.delete(account)
+        session.commit()
 
+def remove_payment(session, id:int):
+    payment = session.query(Payment).get(id)
+    if payment:
+        session.delete(payment)
+        session.commit()
 
+def remove_user(session, id:int):
+    user = session.query(User).get(id)
+    if user:
+        session.delete(user)
+        session.commit()
 
+def remove_main_user(session, id:int):
+    main_user = session.query(MainUser).get(id)
+    if main_user:
+        session.delete(main_user)
+        session.commit()
+
+def remove_other_user(session, id:int):
+    other_user = session.query(OtherUser).get(id)
+    if other_user:
+        session.delete(other_user)
+        session.commit()
+
+def remove_subscription(session, id:int):
+    subscription = session.query(Subscription).get(id)
+    if subscription:
+        session.delete(subscription)
+        session.commit()
+
+def remove_review(session, id:int):
+    review = session.query(Review).get(id)
+    if review:
+        session.delete(review)
+        session.commit()
+
+def remove_cast(session, id:int):
+    cast = session.query(Cast).get(id)
+    if cast:
+        session.delete(cast)
+        session.commit()
+
+def remove_director(session, id:int):
+    director = session.query(Director).get(id)
+    if director:
+        session.delete(director)
+        session.commit()
+
+def remove_actor(session, id:int):
+    actor = session.query(Actor).get(id)
+    if actor:
+        session.delete(actor)
+        session.commit()
+
+def remove_media(session, id:int):
+    media = session.query(Media).get(id)
+    if media:
+        session.delete(media)
+        session.commit()
+
+def remove_movie(session, id:int):
+    movie = session.query(Movie).get(id)
+    if movie:
+        session.delete(movie)
+        session.commit()
+
+def remove_series(session, id:int):
+    series = session.query(Series).get(id)
+    if series:
+        session.delete(series)
+        session.commit()
+
+def remove_episode(session, id:int):
+    episode = session.query(Episode).get(id)
+    if episode:
+        session.delete(episode)
+        session.commit()
+
+def remove_watchlist(session, id:int):
+    watchlist = session.query(Watchlist).get(id)
+    if watchlist:
+        session.delete(watchlist)
+        session.commit()

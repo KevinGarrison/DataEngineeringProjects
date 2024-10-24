@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, REAL
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Enum
 from enum import Enum as PyEnum
 
 
@@ -29,7 +30,7 @@ class Payment(Base):
     id = Column(Integer, primary_key=True)
     iban = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)
-    subscription_type = Column(PyEnum(SubscriptionType), nullable=False)
+    subscription_type = Column(Enum(SubscriptionType), nullable=False)
     account_id = Column(Integer, ForeignKey('accounts.id'))
 
     # Relationship back to Account
@@ -50,7 +51,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False)
-    user_type = Column(PyEnum(UserType), nullable=False)
+    user_type = Column(Enum(UserType), nullable=False)
 
     account = relationship('Account', back_populates='user', uselist=False)
 
@@ -126,9 +127,10 @@ class Cast(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String(200), nullable=False)
+    type = Column(String(50))
 
     __mapper_args__ = {
-        'polymorphic_on': 'type',
+        'polymorphic_on': type,
         'polymorphic_identity': 'cast'
     }
 
@@ -143,7 +145,7 @@ class Director(Cast):
     }
     
     # Relationship to movies (directed by a Director)
-    meida = relationship('Media', back_populates='director')
+    media = relationship('Media', back_populates='director')
 
     def __repr__(self):
         return f"<Director(name={self.name})>"
