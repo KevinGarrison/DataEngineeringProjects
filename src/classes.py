@@ -178,7 +178,7 @@ class Media(Base):
     
     # Relationships
     cast = relationship('Cast', back_populates='media')
-    reviews = relationship()
+    reviews = relationship('Review', back_populates='media')
     # Column to determine the type of media (movie or series)
     media_type = Column(String(50))
     

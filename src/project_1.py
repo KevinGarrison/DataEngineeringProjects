@@ -8,7 +8,7 @@ if __name__ == "__main__":
         session, engine = setup(database)
         
         # Add an account associated with the user
-        add_content(session=session, condition="accounts", user_id=1, balance=1000.50)
+        add_content(session=session, condition="accounts",id=1, user_id=1, payment_id=1)
 
         if session:
             session.close()
