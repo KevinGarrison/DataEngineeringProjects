@@ -1,22 +1,21 @@
-import sqlite3
-from sqlalchemy import Column, Integer, String, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from utils import setup
+from utils import setup, add_content
 
-database = 'database.db'
 
-try:
-    session = setup(database)
+if __name__ == "__main__":
+    database = 'database.db'
+
+    try:
+        Session, engine = setup(database)
+        
+        session = Session()
+        while(1):
+            add_content(session, "Action")
     
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
-except sqlite3.Error as e:
-    session.rollback()
-    print(f"An error occurred: {e}")
-finally:
-    if session:
-        .close()
-    if connection:
-        connection.close()
-
-   
+    finally:
+        if session:
+            session.close()
+        if engine:
+            engine.dispose()

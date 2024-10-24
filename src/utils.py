@@ -1,7 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from classes import Base 
+from typing import Union
 import sqlite3
 
 # Setup Database and Sessionmaker 
@@ -25,74 +25,116 @@ def setup(database_name:str):
     Session = sessionmaker(bind=engine)
     return Session(), engine
 
-def add_content(condition:str):
+
+def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
+    '''
+    Adds content to the SQLite database. 
+    Calls the individual functions for adding content. 
+
+    Parameters:
+    ----------
+    condition : str
+        The name of the table (e.g., 'ACCOUNT').
+    
+    **kwargs : str or int or float or list or dict or bool
+        Variable length keyword arguments representing column names and their respective values.
+        This allows for dynamic insertion of data into the specified table.
+        The values can be of different types, such as:
+        - str: String values for text fields.
+        - int: Integer values for numeric fields.
+        - float: Floating-point numbers for decimal fields.
+        - list: List of values (if applicable).
+        - dict: A dictionary of key-value pairs if multiple columns need to be populated.
+        - bool: Boolean values for binary fields.
+
+    Example:
+    --------
+    add_content_to_database('ACCOUNT', username='johndoe', age=28, balance=1000.50)
+    '''
     match condition:
         case '':
-            pass
+            add_account(kwargs)
         case '':
-            pass
+            add_subscription_type(kwargs)
         case '':
-            pass
+            add_payment(kwargs)
         case '':
-            pass
+            add_user_type(kwargs)
         case '':
-            pass
+            add_user(kwargs)
         case '':
-            pass
+            add_main_user(kwargs)
         case '':
-            pass
+            add_other_user(kwargs)
         case '':
-            pass
+            add_review(kwargs)
         case '':
-            pass
+            add_watchlist(kwargs)
         case '':
-            pass
+            add_cast(kwargs)
         case '':
-            pass
+            add_media_type(kwargs)
         case '':
-            pass
+            add_media(kwargs)
         case '':
-            pass
+            add_movie(kwargs)
         case '':
-            pass
+            add_series(kwargs)
         case '':
-            pass
+            add_episode(kwargs)
 
+def remove_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
+    '''
+    Removes content from the SQLite database.
+    Calls the individual functions for removing content. 
+    
+    Parameters:
+    ----------
+    condition : str
+        The name of the table (e.g., 'ACCOUNT').
 
+    **kwargs : str or int
+        Variable length keyword arguments representing the conditions for removal.
+        This allows for dynamic specification of which records to delete based on column values.
+        The values can be of different types, such as:
+        - str: String values for text fields.
+        - int: Integer values for numeric fields.
 
-
-def remove_content(condition:str):
+    Example:
+    --------
+    remove_content_from_database('ACCOUNT', username='johndoe', age=28)
+    '''
     match condition:
         case '':
-            pass
+            add_account(kwargs)
         case '':
-            pass
+            add_subscription_type(kwargs)
         case '':
-            pass
+            add_payment(kwargs)
         case '':
-            pass
+            add_user_type(kwargs)
         case '':
-            pass
+            add_user(kwargs)
         case '':
-            pass
+            add_main_user(kwargs)
         case '':
-            pass
+            add_other_user(kwargs)
         case '':
-            pass
+            add_review(kwargs)
         case '':
-            pass
+            add_watchlist(kwargs)
         case '':
-            pass
+            add_cast(kwargs)
         case '':
-            pass
+            add_media_type(kwargs)
         case '':
-            pass
+            add_media(kwargs)
         case '':
-            pass
+            add_movie(kwargs)
         case '':
-            pass
+            add_series(kwargs)
         case '':
-            pass
+            add_episode(kwargs)
 
 
 def add_account():
@@ -140,6 +182,51 @@ def add_series():
 def add_episode():
     pass
 
+
+def remove_account():
+    pass
+
+def remove_subscription_type():
+    pass
+
+def remove_payment():
+    pass
+
+def remove_user_type():
+    pass
+
+def remove_user():
+    pass
+
+def remove_main_user():
+    pass
+
+def remove_other_user():
+    pass
+
+def remove_review():
+    pass
+
+def remove_watchlist():
+    pass
+
+def remove_cast():
+    pass
+
+def remove_media_type():
+    pass
+
+def remove_media():
+    pass
+
+def remove_movie():
+    pass
+
+def remove_series():
+    pass
+
+def remove_episode():
+    pass
 
 
 
