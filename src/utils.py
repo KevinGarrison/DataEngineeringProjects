@@ -55,11 +55,7 @@ def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool
         case '':
             add_account(kwargs)
         case '':
-            add_subscription_type(kwargs)
-        case '':
             add_payment(kwargs)
-        case '':
-            add_user_type(kwargs)
         case '':
             add_user(kwargs)
         case '':
@@ -67,13 +63,15 @@ def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool
         case '':
             add_other_user(kwargs)
         case '':
-            add_review(kwargs)
+            add_subscription(kwargs)
         case '':
-            add_watchlist(kwargs)
+            add_review(kwargs)
         case '':
             add_cast(kwargs)
         case '':
-            add_media_type(kwargs)
+            add_director(kwargs)
+        case '':
+            add_actor(kwargs)
         case '':
             add_media(kwargs)
         case '':
@@ -82,6 +80,8 @@ def add_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool
             add_series(kwargs)
         case '':
             add_episode(kwargs)
+        case '':
+            add_watchlist(kwargs)
 
 def remove_content(condition:str, **kwargs: Union[str, int, float, list, dict, bool]):
     '''
@@ -106,47 +106,40 @@ def remove_content(condition:str, **kwargs: Union[str, int, float, list, dict, b
     '''
     match condition:
         case '':
-            add_account(kwargs)
+            remove_account(kwargs)
         case '':
-            add_subscription_type(kwargs)
+            remove_payment(kwargs)
         case '':
-            add_payment(kwargs)
+            remove_user(kwargs)
         case '':
-            add_user_type(kwargs)
+            remove_main_user(kwargs)
         case '':
-            add_user(kwargs)
+            remove_other_user(kwargs)
         case '':
-            add_main_user(kwargs)
+            remove_subscription(kwargs)
         case '':
-            add_other_user(kwargs)
+            remove_review(kwargs)
         case '':
-            add_review(kwargs)
+            remove_cast(kwargs)
         case '':
-            add_watchlist(kwargs)
+            remove_director(kwargs)
         case '':
-            add_cast(kwargs)
+            remove_actor(kwargs)
         case '':
-            add_media_type(kwargs)
+            remove_media(kwargs)
         case '':
-            add_media(kwargs)
+            remove_movie(kwargs)
         case '':
-            add_movie(kwargs)
+            remove_series(kwargs)
         case '':
-            add_series(kwargs)
+            remove_episode(kwargs)
         case '':
-            add_episode(kwargs)
-
+            remove_watchlist(kwargs)
 
 def add_account():
     pass
 
-def add_subscription_type():
-    pass
-
 def add_payment():
-    pass
-
-def add_user_type():
     pass
 
 def add_user():
@@ -158,16 +151,19 @@ def add_main_user():
 def add_other_user():
     pass
 
-def add_review():
+def add_subscription():
     pass
 
-def add_watchlist():
+def add_review():
     pass
 
 def add_cast():
     pass
 
-def add_media_type():
+def add_director():
+    pass
+
+def add_actor():
     pass
 
 def add_media():
@@ -182,17 +178,14 @@ def add_series():
 def add_episode():
     pass
 
+def add_watchlist():
+    pass
+
 
 def remove_account():
     pass
 
-def remove_subscription_type():
-    pass
-
 def remove_payment():
-    pass
-
-def remove_user_type():
     pass
 
 def remove_user():
@@ -204,16 +197,19 @@ def remove_main_user():
 def remove_other_user():
     pass
 
-def remove_review():
+def remove_subscription():
     pass
 
-def remove_watchlist():
+def remove_review():
     pass
 
 def remove_cast():
     pass
 
-def remove_media_type():
+def remove_director():
+    pass
+
+def remove_actor():
     pass
 
 def remove_media():
@@ -228,6 +224,8 @@ def remove_series():
 def remove_episode():
     pass
 
+def remove_watchlist():
+    pass
 
 
 
