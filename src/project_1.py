@@ -1,5 +1,8 @@
 import sqlite3
-from sqlalchemy import create_engine
+from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
 
 try:
     con = sqlite3.connect('db_project_1.db')
