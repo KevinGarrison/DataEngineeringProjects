@@ -76,7 +76,7 @@ class Subscriptiohn(Base):
 
 class OtherUser(User):
     __tablename__ = 'other_users'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, ForeignKey('users.id'), primary_key=True, autoincrement=True)
 
     __mapper_args__ = {
         'polymorphic_identity': UserType.OTHER_USER,
