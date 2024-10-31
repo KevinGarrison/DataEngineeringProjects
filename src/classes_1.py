@@ -36,7 +36,7 @@ class User(Base):
     email = Column(String(50), nullable=False)
     user_type = Column(Enum(UserType), nullable=False)
     review_id = Column(Integer, ForeignKey('reviews.id'))
-    #watchlist_id = Column(Integer, ForeignKey('watchlists.id'))
+    watchlist_id = Column(Integer, ForeignKey('watchlists.id'))
 
     # Many-to-One relationship with Account
     watchlist = relationship('User', back_populates='watchlists')
