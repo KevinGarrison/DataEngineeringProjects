@@ -134,13 +134,14 @@ class Media(Base):
 class Movie(Media):
     __tablename__ = 'movies'
     id = Column(Integer, ForeignKey('medias.id'), primary_key=True, autoincrement=True)
-    duration = Column(Integer, nullable=False)  # Changed to Integer
+    duration = Column(Integer, nullable=False)
 
-    # Foreign Key for configuration and cast
+    # Foreign Key for configuration
     configuration_id = Column(Integer, ForeignKey('configurations.id'))
 
-    # Relationships
-    configuration = relationship('Configuration', back_populates='movie', foreign_keys=[configuration_id])
+    # Relationship with Configuration
+    configuration = relationship('Configuration', back_populates='movies', foreign_keys=[configuration_id])
+    
     cast = relationship('Cast', back_populates='movie', cascade="all, delete-orphan")
 
     __mapper_args__ = {
@@ -155,11 +156,12 @@ class Series(Media):
     # One-to-Many relationship with Episodes
     episodes = relationship('Episode', back_populates='series')
 
-    # Foreign Key for configuration and cast
+    # Foreign Key for configuration
     configuration_id = Column(Integer, ForeignKey('configurations.id'))
 
-    # Relationships
+    # Relationship with Configuration
     configuration = relationship('Configuration', back_populates='series', foreign_keys=[configuration_id])
+    
     cast = relationship('Cast', back_populates='series', cascade="all, delete-orphan")
 
     __mapper_args__ = {
@@ -173,9 +175,10 @@ class Configuration(Base):
     subtitles = Column(Boolean, nullable=False)
     quality = Column(Integer, nullable=False)
 
-    # Relationships
-    movie = relationship('Movie', back_populates='configuration', foreign_keys='Movie.configuration_id')
-    series = relationship('Series', back_populates='configuration', foreign_keys='Series.configuration_id')
+    # Relationships to Series and Movies (one-to-many)
+    movies = relationship('Movie', back_populates='configuration')
+    series = relationship('Series', back_populates='configuration')
+
 
 class Cast(Base):
     __tablename__ = 'casts'
