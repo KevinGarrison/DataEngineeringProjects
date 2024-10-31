@@ -5,8 +5,6 @@ import sqlite3
 # Baseclass and Classes
 from classes_1 import (
     Base,
-    Account,
-    Payment,
     User,
     MainUser,
     OtherUser,

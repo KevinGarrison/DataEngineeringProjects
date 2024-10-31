@@ -39,8 +39,8 @@ class User(Base):
     watchlist_id = Column(Integer, ForeignKey('watchlists.id'))
 
     # Many-to-One relationship with Account
-    watchlist = relationship('User', back_populates='watchlists')
-    review = relationship('User', back_populates='reviews')
+    watchlists = relationship('User', back_populates='watchlists', uselist=False)
+    reviews = relationship('User', back_populates='reviews')
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -120,7 +120,7 @@ class Media(Base):
     review_id = Column(Integer, ForeignKey('reviews.id'))
 
     watchlist = relationship('Media', back_populates='watchlists')
-    reviews = relationship('Media', back_populates='reviews')
+    reviews = relationship('Media', back_populates='reviews', uselist=False)
 
     # Polymorphic identity
     __mapper_args__ = {

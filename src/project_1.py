@@ -1,12 +1,9 @@
 from utils import setup, add_content
 from classes_1 import (
-    #Base,
-    Account,
-    Payment,
     User,
     MainUser,
     OtherUser,
-    #Subscription,
+    Subscription,
     Review,
     Cast,
     Director,
@@ -26,8 +23,7 @@ if __name__ == "__main__":
         # Setup the database and get session
         session, engine = setup(database)
 
-        add_content(session=session, condition='main_users', username="MainUser1", email="main@example.com", account_id=1)
-        add_content(session, 'other_users', username='janedoe', email='jane@example.com',account_id=2)
+        add_content(session=session, condition='main_users', username="MainUser1", email="main@example.com")
 
         users = session.query(MainUser).all()
 
