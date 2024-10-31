@@ -131,7 +131,7 @@ class Media(Base):
 
 class Movie(Media):
     __tablename__ = 'movies'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, ForeignKey('medias.id'), primary_key=True, autoincrement=True)
     duration = Column(Integer, nullable=False)
 
     cast_id = Column(Integer, ForeignKey('casts.id'))
@@ -145,7 +145,7 @@ class Movie(Media):
 
 class Series(Media):
     __tablename__ = 'series'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, ForeignKey('medias.id'), primary_key=True, autoincrement=True)
     season_count = Column(Integer, nullable=False)
     episode_id = Column(Integer, ForeignKey('episodes.id'))
     cast_id = Column(Integer, ForeignKey('casts.id'))
@@ -194,7 +194,7 @@ class Episode(Base):
 
 class Director(Cast):
     __tablename__ = 'directors'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, ForeignKey('casts.id'), primary_key=True, autoincrement=True)
     name = Column(String(200), nullable=False)
     __mapper_args__ = {
         'polymorphic_identity': CastType.DIRECTOR,
@@ -203,7 +203,7 @@ class Director(Cast):
 
 class Actor(Cast):
     __tablename__ = 'actors'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, ForeignKey('casts.id'), primary_key=True, autoincrement=True)
     name = Column(String(200), nullable=False)
 
     __mapper_args__ = {
