@@ -104,8 +104,6 @@ class Watchlist(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
     user = relationship('Watchlist', back_populates='users', uselist=False)
-
-    # One-to-Many relationship with Media
     media = relationship('Watchlist', back_populates='medias')
 
 
@@ -119,11 +117,9 @@ class Media(Base):
     media_type = Column(Enum(MediaType), nullable=False)
 
     watchlist_id = Column(Integer, ForeignKey('watchlists.id'))
+    review_id = Column(Integer, ForeignKey('reviews.id'))
 
-    # Many-to-One relationship with Watchlist
     watchlist = relationship('Media', back_populates='watchlists')
-
-    # One-to-Many relationship with Review
     reviews = relationship('Media', back_populates='reviews')
 
     # Polymorphic identity
@@ -132,40 +128,35 @@ class Media(Base):
         'polymorphic_on': media_type,
     }
 
+
 class Movie(Media):
     __tablename__ = 'movies'
-    id = Column(Integer, ForeignKey('medias.id'), primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     duration = Column(Integer, nullable=False)
 
-    # Foreign Key for configuration
-    configuration_id = Column(Integer, ForeignKey('configurations.id'))
+    cast_id = Column(Integer, ForeignKey('casts.id'))
 
-    # Relationship with Configuration
-    configuration = relationship('Configuration', back_populates='movies', foreign_keys=[configuration_id])
-    
-    cast = relationship('Cast', back_populates='movie', cascade="all, delete-orphan")
+    cast = relationship('Movie', back_populates='casts')
 
     __mapper_args__ = {
         'polymorphic_identity': MediaType.MOVIE
     }
 
+
 class Series(Media):
     __tablename__ = 'series'
-    id = Column(Integer, ForeignKey('medias.id'), primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     season_count = Column(Integer, nullable=False)
+    episode_id = Column(Integer, ForeignKey('episodes.id'))
+    cast_id = Column(Integer, ForeignKey('casts.id'))
 
     # One-to-Many relationship with Episodes
-    episodes = relationship('Episode', back_populates='series', cascade="all, delete-orphan")
-
-   
-    
+    episodes = relationship('Series', back_populates='episodes', cascade="all, delete-orphan")
     cast = relationship('Cast', back_populates='series')
 
     __mapper_args__ = {
         'polymorphic_identity': MediaType.SERIES
     }
-
-
 
 
 class Cast(Base):
@@ -179,13 +170,14 @@ class Cast(Base):
     series_id = Column(Integer, ForeignKey('series.id'))
 
     # Relationships
-    movie = relationship('Movie', back_populates='cast')
-    series = relationship('Series', back_populates='cast')
+    movie = relationship('Cast', back_populates='movies')
+    series = relationship('Cast', back_populates='series')
 
     __mapper_args__ = {
         'polymorphic_identity': 'casts',
         'polymorphic_on': type,
     }
+
 
 class Episode(Base):
     __tablename__ = 'episodes'
@@ -197,23 +189,24 @@ class Episode(Base):
     series_id = Column(Integer, ForeignKey('series.id'))
 
     # Relationship back to Series
-    series = relationship('Series', back_populates='episodes')
+    series = relationship('Episode', back_populates='series')
+
 
 class Director(Cast):
     __tablename__ = 'directors'
-    id = Column(Integer, ForeignKey('casts.id'), primary_key=True, autoincrement=True)
-
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(200), nullable=False)
     __mapper_args__ = {
         'polymorphic_identity': CastType.DIRECTOR,
     }
 
+
 class Actor(Cast):
     __tablename__ = 'actors'
-    id = Column(Integer, ForeignKey('casts.id'), primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(200), nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': CastType.ACTOR,
     }
 
-class Subscription():
-    pass
