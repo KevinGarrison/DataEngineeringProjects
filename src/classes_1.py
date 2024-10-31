@@ -61,7 +61,7 @@ class MainUser(User):
     }
 
 
-class Subscriptiohn(Base):
+class Subscription(Base):
     __tablename__ = 'subscriptions'
     id = Column(Integer, primary_key=True, autoincrement=True)
     iban = Column(String, nullable=False)
