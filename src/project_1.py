@@ -1,5 +1,6 @@
 from utils import setup, add_content
-from classes_1 import (
+from classes import (
+    Base,
     User,
     MainUser,
     OtherUser,
