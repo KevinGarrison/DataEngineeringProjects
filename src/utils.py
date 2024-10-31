@@ -10,7 +10,7 @@ from classes_1 import (
     User,
     MainUser,
     OtherUser,
-    #Subscription,
+    Subscription,
     Review,
     Cast,
     Director,
@@ -73,18 +73,14 @@ def add_content(session, condition:str, **kwargs: Union[str, int, float, list, d
     '''
     try:
         match condition:
-            case 'accounts':
-                add_account(session, **kwargs)
-            case 'payments':
-                add_payment(session, **kwargs)
             case 'users':
                 add_user(session, **kwargs)
             case 'main_users':
                 add_main_user(session, **kwargs)
             case 'other_users':
                 add_other_user(session, **kwargs)
-            #case 'subscriptions':
-             #   add_subscription(session, **kwargs)
+            case 'subscriptions':
+                add_subscription(session, **kwargs)
             case 'reviews':
                 add_review(session, **kwargs)
             case 'cast':
@@ -134,18 +130,14 @@ def remove_content(session, condition:str, id:int):
     remove_content_from_database('ACCOUNT', username='johndoe', age=28)
     '''
     match condition:
-        case 'accounts':
-            remove_account(session, id)
-        case 'payments':
-            remove_payment(session, id)
         case 'users':
             remove_user(session, id)
         case 'main_users':
             remove_main_user(session, id)
         case 'other_users':
             remove_other_user(session, id)
-        #case 'subscriptions':
-         #   remove_subscription(session, id)
+        case 'subscriptions':
+            remove_subscription(session, id)
         case 'reviews':
             remove_review(session, id)
         case 'cast':
@@ -168,16 +160,6 @@ def remove_content(session, condition:str, id:int):
             raise ValueError(f"Invalid condition '{condition}' specified for content removal.")
 
 # Instance functions     
-def add_account(session, **kwargs):
-    account = Account(**kwargs)
-    session.add(account)
-    session.commit()
-
-def add_payment(session, **kwargs):
-    payment = Payment(**kwargs)
-    session.add(payment)
-    session.commit()    
-
 def add_user(session, **kwargs):
     user = User(**kwargs)
     session.add(user)
@@ -193,10 +175,10 @@ def add_other_user(session, **kwargs):
     session.add(other_user)
     session.commit()
 
-#def add_subscription(session, **kwargs):
- #   subscription = Subscription(**kwargs)
-  #  session.add(subscription)
-   # session.commit()
+def add_subscription(session, **kwargs):
+    subscription = Subscription(**kwargs)
+    session.add(subscription)
+    session.commit()
 
 def add_review(session, **kwargs):
     review = Review(**kwargs)
@@ -245,18 +227,6 @@ def add_watchlist(session, **kwargs):
 
 
 # Remove functions
-def remove_account(session, id:int):
-    account = session.query(Account).get(id)
-    if account:
-        session.delete(account)
-        session.commit()
-
-def remove_payment(session, id:int):
-    payment = session.query(Payment).get(id)
-    if payment:
-        session.delete(payment)
-        session.commit()
-
 def remove_user(session, id:int):
     user = session.query(User).get(id)
     if user:
@@ -275,11 +245,11 @@ def remove_other_user(session, id:int):
         session.delete(other_user)
         session.commit()
 
-#def remove_subscription(session, id:int):
- #   subscription = session.query(Subscription).get(id)
-  #  if subscription:
-   #     session.delete(subscription)
-    #    session.commit()
+def remove_subscription(session, id:int):
+    subscription = session.query(Subscription).get(id)
+    if subscription:
+        session.delete(subscription)
+        session.commit()
 
 def remove_review(session, id:int):
     review = session.query(Review).get(id)
