@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Enum, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
+
 
 # Enums for Subscription, User Type, Media Type, and Cast Type
 class SubscriptionType(PyEnum):
@@ -9,33 +10,24 @@ class SubscriptionType(PyEnum):
     YEARLY = "Yearly"
     TEST = "Test"
 
+
 class UserType(PyEnum):
     MAIN_USER = "Main User"
     OTHER_USER = "Other User"
+
 
 class MediaType(PyEnum):
     MOVIE = 'Movie'
     SERIES = 'Series'
 
+
 class CastType(PyEnum):
     ACTOR = 'Actor'
     DIRECTOR = 'Director'
 
+
 Base = declarative_base()
 
-class Account(Base):
-    __tablename__ = 'accounts'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    
-    # One-to-One relationship with Watchlist
-    watchlist_id = Column(Integer, ForeignKey('watchlists.id'))
-    watchlist = relationship("Watchlist", back_populates="account", uselist=False)
-    
-    # One-to-Many relationships
-    users = relationship("User", back_populates="account")
-    payments = relationship("Payment", back_populates="account")
-    reviews = relationship("Review", back_populates="account")
 
 class User(Base):
     __tablename__ = 'users'
@@ -43,10 +35,12 @@ class User(Base):
     username = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False)
     user_type = Column(Enum(UserType), nullable=False)
-    account_id = Column(Integer, ForeignKey('accounts.id'))
+    review_id = Column(Integer, ForeignKey('reviews.id'))
+    #watchlist_id = Column(Integer, ForeignKey('watchlists.id'))
 
     # Many-to-One relationship with Account
-    account = relationship('Account', back_populates='users')
+    watchlist = relationship('User', back_populates='watchlists')
+    review = relationship('User', back_populates='reviews')
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -54,58 +48,66 @@ class User(Base):
         'polymorphic_on': user_type,
     }
 
+
 class MainUser(User):
     __tablename__ = 'main_users'
     id = Column(Integer, ForeignKey('users.id'), primary_key=True, autoincrement=True)
+    subscription_id = Column(Integer, ForeignKey('subscriptions.id'))
+
+    subscription = relationship('MainUser', back_populates='subscriptions', cascade="all, delete-orphan")
 
     __mapper_args__ = {
         'polymorphic_identity': UserType.MAIN_USER,
     }
 
+
+class Subscriptiohn(Base):
+    __tablename__ = 'subscriptions'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    iban = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
+    subscription_type = Column(Enum(SubscriptionType), nullable=False)
+    startdate = Column(Date, nullable=False)
+    enddate = Column(Date, nullable=False)
+    main_user_id = Column(Integer, ForeignKey('main_users.id'))
+
+    main_user = relationship('Subscription', back_populates='main_users')
+
+
 class OtherUser(User):
     __tablename__ = 'other_users'
-    id = Column(Integer, ForeignKey('users.id'), primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
 
     __mapper_args__ = {
         'polymorphic_identity': UserType.OTHER_USER,
     }
 
-class Payment(Base):
-    __tablename__ = 'payments'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    iban = Column(String, nullable=False)
-    price = Column(Float, nullable=False)
-    subscription_type = Column(Enum(SubscriptionType), nullable=False)
-
-    # Foreign Key
-    account_id = Column(Integer, ForeignKey('accounts.id'))
-
-    # Many-to-One relationship with Account
-    account = relationship('Account', back_populates='payments')
 
 class Review(Base):
     __tablename__ = 'reviews'
     id = Column(Integer, primary_key=True, autoincrement=True)
     rating = Column(Float)
-    comment = Column(String(300))
 
     # Foreign Keys
-    account_id = Column(Integer, ForeignKey('accounts.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
     media_id = Column(Integer, ForeignKey('medias.id'))
 
     # Many-to-One relationships
-    account = relationship('Account', back_populates='reviews')
-    media = relationship('Media', back_populates='reviews')
+    user = relationship('Review', back_populates='users')
+    media = relationship('Review', back_populates='medias')
+
 
 class Watchlist(Base):
     __tablename__ = 'watchlists'
     id = Column(Integer, primary_key=True, autoincrement=True)
+    media_id = Column(Integer, ForeignKey('medias.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
 
-    # One-to-One relationship with Account
-    account = relationship('Account', back_populates='watchlist', uselist=False)
+    user = relationship('Watchlist', back_populates='users', uselist=False)
 
     # One-to-Many relationship with Media
-    media = relationship('Media', back_populates='watchlist', cascade="all, delete-orphan")
+    media = relationship('Watchlist', back_populates='medias')
+
 
 class Media(Base):
     __tablename__ = 'medias'
@@ -116,14 +118,13 @@ class Media(Base):
     genre = Column(String(200), nullable=False)
     media_type = Column(Enum(MediaType), nullable=False)
 
-    # Foreign Key
     watchlist_id = Column(Integer, ForeignKey('watchlists.id'))
 
     # Many-to-One relationship with Watchlist
-    watchlist = relationship('Watchlist', back_populates='media')
+    watchlist = relationship('Media', back_populates='watchlists')
 
     # One-to-Many relationship with Review
-    reviews = relationship('Review', back_populates='media')
+    reviews = relationship('Media', back_populates='reviews')
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -154,30 +155,17 @@ class Series(Media):
     season_count = Column(Integer, nullable=False)
 
     # One-to-Many relationship with Episodes
-    episodes = relationship('Episode', back_populates='series')
+    episodes = relationship('Episode', back_populates='series', cascade="all, delete-orphan")
 
-    # Foreign Key for configuration
-    configuration_id = Column(Integer, ForeignKey('configurations.id'))
-
-    # Relationship with Configuration
-    configuration = relationship('Configuration', back_populates='series', foreign_keys=[configuration_id])
+   
     
-    cast = relationship('Cast', back_populates='series', cascade="all, delete-orphan")
+    cast = relationship('Cast', back_populates='series')
 
     __mapper_args__ = {
         'polymorphic_identity': MediaType.SERIES
     }
 
-class Configuration(Base):
-    __tablename__ = 'configurations'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    language = Column(String, nullable=False)
-    subtitles = Column(Boolean, nullable=False)
-    quality = Column(Integer, nullable=False)
 
-    # Relationships to Series and Movies (one-to-many)
-    movies = relationship('Movie', back_populates='configuration')
-    series = relationship('Series', back_populates='configuration')
 
 
 class Cast(Base):
