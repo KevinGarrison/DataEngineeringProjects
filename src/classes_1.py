@@ -23,7 +23,6 @@ class CastType(PyEnum):
 
 Base = declarative_base()
 
-# Account Class
 class Account(Base):
     __tablename__ = 'accounts'
 
@@ -38,7 +37,6 @@ class Account(Base):
     payments = relationship("Payment", back_populates="account")
     reviews = relationship("Review", back_populates="account")
 
-# User Class
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -58,7 +56,7 @@ class User(Base):
 
 class MainUser(User):
     __tablename__ = 'main_users'
-    id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('users.id'), primary_key=True, autoincrement=True)
 
     __mapper_args__ = {
         'polymorphic_identity': UserType.MAIN_USER,
@@ -66,13 +64,12 @@ class MainUser(User):
 
 class OtherUser(User):
     __tablename__ = 'other_users'
-    id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('users.id'), primary_key=True, autoincrement=True)
 
     __mapper_args__ = {
         'polymorphic_identity': UserType.OTHER_USER,
     }
 
-# Payment Class
 class Payment(Base):
     __tablename__ = 'payments'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -86,7 +83,6 @@ class Payment(Base):
     # Many-to-One relationship with Account
     account = relationship('Account', back_populates='payments')
 
-# Review Class
 class Review(Base):
     __tablename__ = 'reviews'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -101,7 +97,6 @@ class Review(Base):
     account = relationship('Account', back_populates='reviews')
     media = relationship('Media', back_populates='reviews')
 
-# Watchlist Class
 class Watchlist(Base):
     __tablename__ = 'watchlists'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -112,7 +107,6 @@ class Watchlist(Base):
     # One-to-Many relationship with Media
     media = relationship('Media', back_populates='watchlist', cascade="all, delete-orphan")
 
-# Media Class
 class Media(Base):
     __tablename__ = 'medias'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -139,7 +133,7 @@ class Media(Base):
 
 class Movie(Media):
     __tablename__ = 'movies'
-    id = Column(Integer, ForeignKey('medias.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('medias.id'), primary_key=True, autoincrement=True)
     duration = Column(Integer, nullable=False)  # Changed to Integer
 
     # Foreign Key for configuration and cast
@@ -155,7 +149,7 @@ class Movie(Media):
 
 class Series(Media):
     __tablename__ = 'series'
-    id = Column(Integer, ForeignKey('medias.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('medias.id'), primary_key=True, autoincrement=True)
     season_count = Column(Integer, nullable=False)
 
     # One-to-Many relationship with Episodes
@@ -172,7 +166,6 @@ class Series(Media):
         'polymorphic_identity': MediaType.SERIES
     }
 
-# Configuration Class
 class Configuration(Base):
     __tablename__ = 'configurations'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -184,7 +177,6 @@ class Configuration(Base):
     movie = relationship('Movie', back_populates='configuration', foreign_keys='Movie.configuration_id')
     series = relationship('Series', back_populates='configuration', foreign_keys='Series.configuration_id')
 
-# Cast Class
 class Cast(Base):
     __tablename__ = 'casts'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -204,10 +196,9 @@ class Cast(Base):
         'polymorphic_on': type,
     }
 
-# Episode Class
 class Episode(Base):
     __tablename__ = 'episodes'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     episode_number = Column(Integer, nullable=False)
 
@@ -217,20 +208,21 @@ class Episode(Base):
     # Relationship back to Series
     series = relationship('Series', back_populates='episodes')
 
-# Director Class
 class Director(Cast):
     __tablename__ = 'directors'
-    id = Column(Integer, ForeignKey('casts.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('casts.id'), primary_key=True, autoincrement=True)
 
     __mapper_args__ = {
         'polymorphic_identity': CastType.DIRECTOR,
     }
 
-# Actor Class
 class Actor(Cast):
     __tablename__ = 'actors'
-    id = Column(Integer, ForeignKey('casts.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('casts.id'), primary_key=True, autoincrement=True)
 
     __mapper_args__ = {
         'polymorphic_identity': CastType.ACTOR,
     }
+
+class Subscription():
+    pass
