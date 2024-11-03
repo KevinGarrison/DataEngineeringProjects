@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from typing import Union
 import sqlite3
 # Baseclass and Classes
-from classes import (
+from new_classes import (
     Base,
     User,
     MainUser,
