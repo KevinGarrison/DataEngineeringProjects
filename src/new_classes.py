@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 from sqlalchemy import Column
 from sqlalchemy import Table
 from sqlalchemy import ForeignKey
@@ -51,7 +51,7 @@ class User(Base):
 
     # Relationships
     watchlist:Mapped["Watchlist"] = relationship(back_populates='user')
-    review:Mapped["Review"] = relationship(back_populates='user')
+    review:Mapped[Optional[List["Review"]]] = relationship(back_populates='user')
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -64,7 +64,7 @@ class MainUser(User):
     __tablename__ = 'main_users'
     
     #Attributes
-    id:Mapped[int] = mapped_column(ForeignKey('users.id'), primary_key=True, autoincrement=True) # Prüfen
+    id:Mapped[int] = mapped_column(ForeignKey('users.id'), primary_key=True, autoincrement=True)
 
     #Relationships
     subscription:Mapped["Subscription"] = relationship(back_populates='main_user', cascade="all, delete-orphan")
@@ -97,7 +97,7 @@ class Subscription(Base):
     subscription_type:Mapped[SubscriptionType] = mapped_column(nullable=False)
     startdate:Mapped[date] = mapped_column(nullable=False)
     enddate:Mapped[date] = mapped_column(nullable=False)
-    main_user_id:Mapped[int] = mapped_column(ForeignKey('main_users.id'))
+    main_user_id:Mapped[int] = mapped_column(ForeignKey('main_users.id'), nullable=False) # nullable=False because of composition
 
     # Relationships
     main_user:Mapped["MainUser"] = relationship(back_populates='subscription')
@@ -111,7 +111,7 @@ class Watchlist(Base):
     user_id:Mapped[int] = mapped_column(ForeignKey('users.id'))
     
     # Relationships
-    user:Mapped["User"] = relationship(back_populates='watchlist')
+    user:Mapped["User"] = relationship(back_populates='watchlist', single_parent=True)
     media:Mapped[List["Media"]] = relationship(secondary='watchlist_media', back_populates='watchlist') 
 
 
@@ -127,8 +127,8 @@ class Media(Base):
     media_type:Mapped[MediaType] = mapped_column(nullable=False)
 
     # Relationships
-    watchlist:Mapped[List["Watchlist"]] = relationship(secondary='watchlist_media', back_populates='media') 
-    review:Mapped["Review"] = relationship(back_populates='media')
+    watchlist:Mapped[Optional[List["Watchlist"]]] = relationship(secondary='watchlist_media', back_populates='media') 
+    review:Mapped[Optional[List["Review"]]] = relationship(back_populates='media')
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -160,7 +160,7 @@ class Movie(Media):
     cast_id:Mapped[int] = mapped_column(ForeignKey('casts.id'))
 
     # Relationships
-    cast:Mapped["Cast"] = relationship(back_populates='movie', uselist=False)
+    cast:Mapped["Cast"] = relationship(back_populates='movie')
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -177,8 +177,8 @@ class Series(Media):
     cast_id:Mapped[int] = mapped_column(ForeignKey('casts.id'))
 
     # Relationships
-    episode:Mapped["Episode"] = relationship(back_populates='series', cascade="all, delete-orphan")
-    cast:Mapped["Cast"] = relationship(back_populates='series', uselist=False) #primaryjoin="Series.cast_id == Cast.id"
+    episode:Mapped[List["Episode"]] = relationship(back_populates='series', cascade="all, delete-orphan")
+    cast:Mapped["Cast"] = relationship(back_populates='series')
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -195,8 +195,8 @@ class Cast(Base):
     type:Mapped[CastType] = mapped_column(nullable=False)
 
     # Relationships
-    movie:Mapped["Movie"] = relationship(back_populates='cast', uselist=False)
-    series:Mapped["Series"] = relationship(back_populates='cast', uselist=False)
+    movie:Mapped["Movie"] = relationship(back_populates='cast', single_parent=True)
+    series:Mapped["Series"] = relationship(back_populates='cast', single_parent=True)
 
     # Polymorphic identity
     __mapper_args__ = {
@@ -212,7 +212,7 @@ class Episode(Base):
     id:Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title:Mapped[str] = mapped_column(nullable=False)
     episode_number:Mapped[int] = mapped_column(nullable=False)
-    series_id:Mapped[int] = mapped_column(ForeignKey('series.id'))
+    series_id:Mapped[int] = mapped_column(ForeignKey('series.id'), nullable=False)
 
     # Relationships
     series:Mapped["Series"] = relationship(back_populates='episode')
