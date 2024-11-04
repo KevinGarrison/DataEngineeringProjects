@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 
 
-# Enums for Subscription, User Type, Media Type, and Cast Type
 class SubscriptionType(PyEnum):
     MONTHLY = "Monthly"
     YEARLY = "Yearly"
