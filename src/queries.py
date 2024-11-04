@@ -1,5 +1,5 @@
 from sqlalchemy import func
-from src.classes import (
+from classes import (
     User,
     Media,
     Watchlist,
@@ -13,7 +13,7 @@ from src.classes import (
 
 class Queries:
 
-    def count_media_per_user(session):
+    def count_media_per_user(self, session):
         """Counts the number of media items in each user's watchlist."""
         result = session.query(
             User.username,
@@ -27,7 +27,7 @@ class Queries:
         for username, media_count in result:
             print(f"Username: {username}, Media Count: {media_count}")
 
-    def average_rating_by_genre(session):
+    def average_rating_by_genre(self, session):
         """Calculates the average rating of movies and series by genre."""
         result = session.query(
             Media.genre,
@@ -39,7 +39,7 @@ class Queries:
             print(f"Genre: {genre}, Average Rating: {avg_rating:.2f}")
 
 
-    def count_reviews_per_media(session):
+    def count_reviews_per_media(self, session):
         """Counts the number of reviews per media item."""
         result = session.query(
             Media.title,
@@ -51,7 +51,7 @@ class Queries:
         for title, review_count in result:
             print(f"Media Title: {title}, Review Count: {review_count}")
 
-    def total_revenue_by_subscription_type(session):
+    def total_revenue_by_subscription_type(self, session):
         """Calculates total revenue by subscription type."""
         result = session.query(
             Subscription.subscription_type,
@@ -62,7 +62,7 @@ class Queries:
         for sub_type, total_revenue in result:
             print(f"Subscription Type: {sub_type}, Total Revenue: ${total_revenue:.2f}")
 
-    def count_episodes_per_series(session):
+    def count_episodes_per_series(self, session):
         """Counts the number of episodes per series."""
         result = session.query(
             Series.title,

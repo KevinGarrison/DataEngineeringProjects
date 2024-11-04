@@ -1,11 +1,11 @@
 from datetime import date
 
-from src.classes import (
+from classes import (
     SubscriptionType,
     CastType,
 )
 
-from src.classes import (
+from classes import (
     User,
     MainUser,
     Subscription,
@@ -145,11 +145,3 @@ def populate_watchlist_media(session):
     watchlist.media.extend(media)  
     session.commit()
 
-def populate_data(session):
-    populate_users(session)
-    populate_watchlists(session)
-    populate_media(session)
-    populate_cast(session)
-    populate_episodes(session)
-    populate_reviews(session)
-    populate_watchlist_media(session)

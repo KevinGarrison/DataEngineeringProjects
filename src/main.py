@@ -1,13 +1,15 @@
 from utils import setup, drop_all_tables
-from populate_data import populate_data
+import populate_data as ppd
+import print_data as prd
 from queries import Queries
 
 
-from src.classes import (
+
+from classes import (
     SubscriptionType,
     CastType,
 )
-from src.classes import (
+from classes import (
     User,
     MainUser,
     Subscription,
@@ -39,8 +41,26 @@ if __name__ == "__main__":
 
         #for table in tables:
          #   print(table)
+        #ppd.populate_users(session)
+        #prd.print_users(session)
+
+        #ppd.populate_watchlists(session)
+        #prd.print_watchlists(session)
+
+        #ppd.populate_media(session)
+        #prd.print_media(session)
+
+        #ppd.populate_cast(session)
+        #prd.print_cast(session)
+
+        #ppd.populate_episodes(session)
+        #prd.print_episodes(session)
         
-        populate_data(session)
+        #ppd.populate_reviews(session)
+        #prd.print_reviews(session)
+
+        #ppd.populate_watchlist_media(session)
+        #prd.print_watchlist_media(session)
         
         queries.count_media_per_user(session)
         queries.average_rating_by_genre(session)
@@ -48,6 +68,10 @@ if __name__ == "__main__":
         queries.total_revenue_by_subscription_type(session)
         queries.count_episodes_per_series(session)
 
+        if session:
+            session.close()
+        if engine:
+            engine.dispose()
 
     except Exception as e:
         print(f"An error occurred: {e}")

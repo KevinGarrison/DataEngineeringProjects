@@ -1,4 +1,4 @@
-from src.classes import (
+from classes import (
     User,
     MainUser,
     Subscription,
