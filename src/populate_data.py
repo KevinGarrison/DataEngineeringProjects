@@ -1,5 +1,5 @@
 from datetime import date
-
+import json
 from classes import (
     SubscriptionType,
     CastType,
@@ -57,6 +57,7 @@ def populate_watchlists(session):
 def populate_media(session):
     """Populates the Media, Movie, and Series tables with sample data."""
     movie = Movie(
+        id = 1,
         title="Inception",
         release_year=2010,
         rating=8.8,
@@ -65,6 +66,7 @@ def populate_media(session):
     )
 
     series = Series(
+        id = 2,
         title="Breaking Bad",
         release_year=2008,
         rating=9.5,
@@ -79,8 +81,8 @@ def populate_media(session):
 
 def populate_cast(session):
     """Populates the Cast, Director, and Actor tables with sample data."""
-    movie = session.query(Movie).first()
-    series = session.query(Series).first()
+    movie = session.query(Movie).filter_by(id=1).first()
+    series = session.query(Series).filter_by(id=2).first()
     
     director = Director(
         description="Director of Inception",
@@ -145,3 +147,28 @@ def populate_watchlist_media(session):
     watchlist.media.extend(media)  
     session.commit()
 
+
+def create_single_cast(session, filename):
+    with open(filename) as jsonfile:
+        cast_data = json.load(jsonfile)
+        movie = session.query(Movie).filter_by(id=2).first()
+        series = session.query(Series).filter_by(id=1).first()
+        
+        director_data = cast_data["director"]
+        director = Director(
+            type=CastType.DIRECTOR,
+            name=director_data["name"],
+            series=series
+        )
+
+        actor_data = cast_data["actor"]
+        actor = Actor(
+            type=CastType.ACTOR,
+            name=actor_data["name"],
+            movie=movie
+        )
+
+        session.add(director)
+        session.add(actor)
+        session.commit()
+        

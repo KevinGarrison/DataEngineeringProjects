@@ -2,6 +2,7 @@ from utils import setup, drop_all_tables
 import populate_data as ppd
 import print_data as prd
 from queries import Queries
+from sqlalchemy import inspect
 
 
 
@@ -47,8 +48,12 @@ if __name__ == "__main__":
         #ppd.populate_watchlists(session)
         #prd.print_watchlists(session)
 
-        #ppd.populate_media(session)
-        #prd.print_media(session)
+        ppd.populate_media(session)
+        prd.print_media(session)
+
+        ppd.create_single_cast(session, "src\cast.json")
+        prd.print_cast(session)
+
 
         #ppd.populate_cast(session)
         #prd.print_cast(session)
@@ -62,11 +67,11 @@ if __name__ == "__main__":
         #ppd.populate_watchlist_media(session)
         #prd.print_watchlist_media(session)
         
-        queries.count_media_per_user(session)
-        queries.average_rating_by_genre(session)
-        queries.count_reviews_per_media(session)
-        queries.total_revenue_by_subscription_type(session)
-        queries.count_episodes_per_series(session)
+        #queries.count_media_per_user(session)
+        #queries.average_rating_by_genre(session)
+        #queries.count_reviews_per_media(session)
+        #queries.total_revenue_by_subscription_type(session)
+        #queries.count_episodes_per_series(session)
 
         if session:
             session.close()
