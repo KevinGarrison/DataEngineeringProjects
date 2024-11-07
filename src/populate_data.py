@@ -151,22 +151,27 @@ def populate_watchlist_media(session):
 def create_single_cast(session, filename):
     with open(filename) as jsonfile:
         cast_data = json.load(jsonfile)
-        movie = session.query(Movie).filter_by(id=2).first()
-        series = session.query(Series).filter_by(id=1).first()
+        #movie = session.query(Movie).filter_by(id=2).first()
+        #series = session.query(Series).filter_by(id=1).first()
         
         director_data = cast_data["director"]
         director = Director(
+            series_id=1,
+            description=director_data["description"],
             type=CastType.DIRECTOR,
             name=director_data["name"],
-            series=series
+            #series=series
         )
-
         actor_data = cast_data["actor"]
         actor = Actor(
+            movie_id=1,
+            description=actor_data["description"],
             type=CastType.ACTOR,
             name=actor_data["name"],
-            movie=movie
+            #series=series
         )
+        
+        
 
         session.add(director)
         session.add(actor)

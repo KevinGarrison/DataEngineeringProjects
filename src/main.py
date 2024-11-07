@@ -10,6 +10,8 @@ from classes import (
     SubscriptionType,
     CastType,
 )
+
+
 from classes import (
     User,
     MainUser,
@@ -27,6 +29,7 @@ from classes import (
     watchlist_media
 )
 
+
 if __name__ == "__main__":
     database = 'database.db'
 
@@ -35,13 +38,16 @@ if __name__ == "__main__":
 
         queries = Queries()
         
-        #result = drop_all_tables(engine)
-        #print(result)
+        result = drop_all_tables(engine)
+        print(result)
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+
+        session, engine = setup(database)
         #inspector = inspect(engine)
         #tables = inspector.get_table_names()
-
         #for table in tables:
-         #   print(table)
+        #    print(table)
         #ppd.populate_users(session)
         #prd.print_users(session)
 
@@ -53,6 +59,7 @@ if __name__ == "__main__":
 
         ppd.create_single_cast(session, "src\cast.json")
         prd.print_cast(session)
+        prd.print_media(session)
 
 
         #ppd.populate_cast(session)

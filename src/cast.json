@@ -1,10 +1,10 @@
 {
     "director": {
       "name": "Vince Gilligan",
+      "description": "Creator and director known for his work on Breaking Bad."
     },
     "actor": {
       "name": "Leonardo DiCaprio",
-      
+      "description": "Played the role of Dom Cobb, a skilled thief who enters people's dreams in Inception."
     }
-    
 }
