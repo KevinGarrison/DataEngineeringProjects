@@ -147,33 +147,41 @@ def populate_watchlist_media(session):
     watchlist.media.extend(media)  
     session.commit()
 
-
+#Aufgabe 1
 def create_single_cast(session, filename):
     with open(filename) as jsonfile:
         cast_data = json.load(jsonfile)
-        #movie = session.query(Movie).filter_by(id=2).first()
-        #series = session.query(Series).filter_by(id=1).first()
-        
         director_data = cast_data["director"]
         director = Director(
             series_id=1,
             description=director_data["description"],
             type=CastType.DIRECTOR,
-            name=director_data["name"],
-            #series=series
+            name=director_data["name"]
         )
-        actor_data = cast_data["actor"]
-        actor = Actor(
-            movie_id=1,
-            description=actor_data["description"],
-            type=CastType.ACTOR,
-            name=actor_data["name"],
-            #series=series
+        actor_data = cast_data["actors"]
+        for actor in actor_data:
+            actor = Actor(
+                movie_id=1,
+                description=actor["description"],
+                type=CastType.ACTOR,
+                name=actor["name"]
+            )
+            session.add(actor)
+        session.add(director)
+        session.commit()
+
+# Aufgabe 2 und 3 
+def create_other_user(session, filename):
+    with open(filename) as jsonfile:
+        user_data = json.load(jsonfile)
+        other_user = OtherUser(
+            username=user_data["username"],
+            email=user_data["email"]
         )
+        session.add(other_user)
+        session.commit()
         
         
 
-        session.add(director)
-        session.add(actor)
-        session.commit()
+        
         

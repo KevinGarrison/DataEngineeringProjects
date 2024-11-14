@@ -89,3 +89,5 @@ def print_watchlist_media(session):
         print(f"Watchlist ID: {watchlist.id} (User ID: {watchlist.user_id}) has media items:")
         for media in watchlist.media:
             print(f"  - Media ID: {media.id}, Title: {media.title}")
+
+
