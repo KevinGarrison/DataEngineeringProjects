@@ -56,17 +56,27 @@ if __name__ == "__main__":
         ppd.populate_watchlists(session)
         prd.print_watchlists(session)
 
+        
+
         ppd.populate_media(session)
         prd.print_media(session)
 
-        ppd.create_sin
-        gle_cast(session, "src\cast.json")
+        ppd.populate_reviews(session)
+        prd.print_reviews(session)
+
+        ppd.populate_watchlist_media(session)
+        prd.print_watchlist_media(session)
+
+        ppd.create_single_cast(session, "src\cast.json")
         prd.print_cast(session)
         prd.print_media(session)
 
         ppd.create_other_user(session,"src\otheruser.json")
         prd.print_users(session)
 
+
+        # add description of class in to_dict
+        prd.reviewandwatchlist_to_json(session)
 
         # ppd.populate_cast(session)
         # prd.print_cast(session)
