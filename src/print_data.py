@@ -102,6 +102,6 @@ def reviewandwatchlist_to_json(session):
     
     review = to_dict(review)
     watchlist = to_dict(watchlist)
-    with open("src/reviewwatchlist.json", "w") as json_file:
+    with open("json/reviewwatchlist.json", "w") as json_file:
         json.dump(review, json_file, indent=4)
         json.dump(watchlist, json_file, indent=4)

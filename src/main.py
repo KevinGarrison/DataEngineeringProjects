@@ -67,11 +67,11 @@ if __name__ == "__main__":
         ppd.populate_watchlist_media(session)
         prd.print_watchlist_media(session)
 
-        ppd.create_single_cast(session, "src\cast.json")
+        ppd.create_single_cast(session, "json\cast.json")
         prd.print_cast(session)
         prd.print_media(session)
 
-        ppd.create_other_user(session,"src\otheruser.json")
+        ppd.create_other_user(session,"json\otheruser.json")
         prd.print_users(session)
 
 
