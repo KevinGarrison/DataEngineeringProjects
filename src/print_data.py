@@ -15,6 +15,7 @@ from classes import (
     watchlist_media
 )
 import json
+from queries import Queries
 
 
 def print_users(session):
@@ -105,3 +106,16 @@ def reviewandwatchlist_to_json(session):
     with open("json/reviewwatchlist.json", "w") as json_file:
         json.dump(review, json_file, indent=4)
         json.dump(watchlist, json_file, indent=4)
+
+
+def queries_to_json(session):
+
+    query1 = Queries.count_media_per_user(session)
+    query2 = Queries.average_rating_by_genre(session)
+    query3 = Queries.count_episodes_per_series(session)
+
+    with open("json/queries.json", "w") as json_file:
+        json.dump(query1, json_file, indent=4)
+        json.dump(query2, json_file, indent=4)
+        json.dump(query3, json_file, indent=4)
+
