@@ -24,8 +24,12 @@ class Queries:
         .group_by(User.id) \
         .all()
 
+        r = []
         for username, media_count in result:
+            r.append([username, media_count])
             print(f"Username: {username}, Media Count: {media_count}")
+        return r
+    
 
     def average_rating_by_genre(self, session):
         """Calculates the average rating of movies and series by genre."""
@@ -34,10 +38,11 @@ class Queries:
             func.avg(Media.rating).label('average_rating')
         ).group_by(Media.genre) \
         .all()
-
+        r = []
         for genre, avg_rating in result:
+            r.append([genre, avg_rating])
             print(f"Genre: {genre}, Average Rating: {avg_rating:.2f}")
-
+        return r
 
     def count_reviews_per_media(self, session):
         """Counts the number of reviews per media item."""
@@ -47,10 +52,13 @@ class Queries:
         ).join(Review, Media.id == Review.media_id) \
         .group_by(Media.id) \
         .all()
-
+        r = []
         for title, review_count in result:
+            r.append([title, review_count])
             print(f"Media Title: {title}, Review Count: {review_count}")
-
+        return r
+    
+    
     def total_revenue_by_subscription_type(self, session):
         """Calculates total revenue by subscription type."""
         result = session.query(
@@ -71,5 +79,8 @@ class Queries:
         .group_by(Series.id) \
         .all()
 
+        r = []
         for title, episode_count in result:
+            r.append([title, episode_count])
             print(f"Series Title: {title}, Episode Count: {episode_count}")
+        return r

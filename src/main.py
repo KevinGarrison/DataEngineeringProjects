@@ -63,12 +63,12 @@ if __name__ == "__main__":
         prd.print_reviews(session)
 
 
-        # ppd.create_single_cast(session, "json\cast.json")
-        # prd.print_cast(session)
-        # prd.print_media(session)
+        ppd.create_single_cast(session, "json\cast.json")
+        prd.print_cast(session)
+        prd.print_media(session)
 
-        # ppd.create_other_user(session,"json\otheruser.json")
-        # prd.print_users(session)
+        ppd.create_other_user(session,"json\otheruser.json")
+        prd.print_users(session)
 
 
         # print 2 different single entities to json
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         prd.print_episodes(session)
         
 
-        print("      Count the media per user ")
+        #print("      Count the media per user ")
         queries.count_media_per_user(session)
 
 

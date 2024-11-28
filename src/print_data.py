@@ -110,9 +110,10 @@ def reviewandwatchlist_to_json(session):
 
 def queries_to_json(session):
 
-    query1 = Queries.count_media_per_user(session)
-    query2 = Queries.average_rating_by_genre(session)
-    query3 = Queries.count_episodes_per_series(session)
+    queries_instance = Queries()
+    query1 = queries_instance.count_reviews_per_media(session)
+    query2 = queries_instance.average_rating_by_genre(session)
+    query3 = queries_instance.count_episodes_per_series(session)
 
     with open("json/queries.json", "w") as json_file:
         json.dump(query1, json_file, indent=4)
