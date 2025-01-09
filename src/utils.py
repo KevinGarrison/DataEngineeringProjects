@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine, inspect, MetaData
 from sqlalchemy.orm import sessionmaker
 import sqlite3
+import time
+import redis
 
 from classes import Base
 
@@ -49,4 +51,53 @@ def drop_all_tables(engine):
         return "All tables have been successfully deleted."
     else:
         return f"Some tables still exist: {tables}"
+
+def sim_play():
+    '''
+    
+    '''
+
+def sim_pause():
+    '''
+    '''
+
+def sim_stop():
+    '''
+    '''
+
+def sim_ads():
+    '''
+    '''
+
+def create_redis_hset():
+    '''
+    '''
+
+def create_redis_list():
+    '''
+    '''
+
+def create_redis_sorted_set():
+    '''
+    '''
+
+def write_redis():
+    '''
+    '''
+
+def calc_watchtime():
+    '''
+    '''
+
+def query_1_redis():
+    '''
+    '''
+
+def query_2_redis():
+    '''
+    '''
+
+def query_3_redis():
+    '''
+    '''
 
