@@ -52,52 +52,52 @@ def drop_all_tables(engine):
     else:
         return f"Some tables still exist: {tables}"
 
-def sim_play():
+
+from neo4j import GraphDatabase
+
+def neo4j_init(uri="bolt://localhost:7687", user="neo4j", password="password"):
+    try:
+        driver = GraphDatabase.driver(uri, auth=(user, password))
+        print("Connected to Neo4j!")
+        return driver
+    except Exception as e:
+        print(f"Error connecting to Neo4j: {e}")
+        return None
+
+
+def neo4j_add_relation_user_reviews(driver, user, reviews):
+    (u)->[reviews]->(r)
+    (u)->[reviews]->(r1)
+
+def neo4j_add_relation_user_watchlists(driver, user, watchlists):
+
+
+def neo4j_add_relation_user_subscription(driver, user, sub):
+
+
+def neo4j_close_sess(driver)->bool:
+
+
+def query_1_neo4j(driver, query):
     '''
-    
+    print() für die query
     '''
 
-def sim_pause():
-    '''
-    '''
-
-def sim_stop():
-    '''
+def query_2_neo4j(driver, query):
+   '''
+    print() für die query
     '''
 
-def sim_ads():
+def query_3_neo4j(driver, query):
     '''
-    '''
-
-def create_redis_hset():
-    '''
+    print() für die query
     '''
 
-def create_redis_list():
-    '''
-    '''
+'''
+TODO:
+1. Funktionen implementieren
+3. Queries schreiben
+3. Doku in oveleaf
 
-def create_redis_sorted_set():
-    '''
-    '''
-
-def write_redis():
-    '''
-    '''
-
-def calc_watchtime():
-    '''
-    '''
-
-def query_1_redis():
-    '''
-    '''
-
-def query_2_redis():
-    '''
-    '''
-
-def query_3_redis():
-    '''
-    '''
+'''
 
