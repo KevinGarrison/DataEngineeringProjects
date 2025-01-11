@@ -88,14 +88,72 @@ def neo4j_add_relation_user_reviews(driver, user, reviews):
 def neo4j_add_relation_user_watchlists(driver, user, watchlists):
     pass
 
-def neo4j_add_relation_actor_movie_cast(driver, actor, movie, director):
-    pass
+def neo4j_add_relation_actor_movie_cast(driver):
+    with driver.session() as session:
+        
+        query_movie="""
+                CREATE (:Movie {id: 123, title: $title, release_year: $release_year, 
+                                rating: $rating, genre: $genre, duration: $duration})
+            """
+
+        session.run(query_movie)
+
+        query_actor="""
+                CREATE (:Actor {description: $description, type: $type, 
+                                name: $name, movie_id: $movie_id, series_id: $series_id})
+            """
+
+        session.run(query_actor)
+
+        query_director="""
+                CREATE (:Actor {description: $description, type: $type, 
+                                name: $name, movie_id: $movie_id, series_id: $series_id})
+            """
+
+        session.run(query_director)
+
+
+        
+        
+
+        # Create Directors
+        for director in data["directors"]:
+            session.run("""
+                CREATE (:Director {description: $description, type: $type, 
+                                   name: $name, movie_id: $movie_id})
+            """, director)
+
+        # Create Actors
+        for actor in data["actors"]:
+            session.run("""
+                CREATE (:Actor {description: $description, type: $type, 
+                                name: $name, movie_id: $movie_id, series_id: $series_id})
+            """, actor)
+
+        # Create Relationships
+        session.run("""
+            MATCH (d:Director), (m:Movie)
+            WHERE d.movie_id = m.id
+            CREATE (d)-[:DIRECTED]->(m)
+        """)
+        
+        session.run("""
+            MATCH (a:Actor), (m:Movie)
+            WHERE a.movie_id = m.id
+            CREATE (a)-[:ACTED_IN]->(m)
+        """)
+        
+        session.run("""
+            MATCH (a:Actor), (s:Series)
+            WHERE a.series_id = s.id
+            CREATE (a)-[:ACTED_IN]->(s)
+        """)
 
 def add_data_to_neo4j(driver, data)->bool:
     pass
 
-def neo4j_close_sess(driver)->bool:
-    pass
+def neo4j_close_sess(driver)->bool: #DONE
+    driver.close()
 
 def query_1_neo4j(driver, query):
     '''
