@@ -54,7 +54,7 @@ def drop_all_tables(engine):
         return f"Some tables still exist: {tables}"
 
 
-def neo4j_init(uri="bolt://localhost:7687", user="neo4j", password="password"):
+def neo4j_init(uri): # DONE
     """
     Initializes a connection to the Neo4j database.
 
@@ -68,7 +68,7 @@ def neo4j_init(uri="bolt://localhost:7687", user="neo4j", password="password"):
     """
     try:
         # Create the driver
-        driver = GraphDatabase.driver(uri, auth=(user, password))
+        driver = GraphDatabase.driver(uri)
         
         # Test the connection
         with driver.session() as session:

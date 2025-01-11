@@ -33,7 +33,7 @@ from classes import (
 
 if __name__ == "__main__":
 
-    driver = neo4j_init(uri="bolt://localhost:7474", user="neo4j", password="your_password")
+    driver = neo4j_init(uri="bolt://localhost:7687")
 
     print(driver)
 
