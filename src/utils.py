@@ -2,7 +2,8 @@ from sqlalchemy import create_engine, inspect, MetaData
 from sqlalchemy.orm import sessionmaker
 import sqlite3
 import time
-import redis
+from neo4j import GraphDatabase
+
 
 from classes import Base
 
@@ -53,30 +54,48 @@ def drop_all_tables(engine):
         return f"Some tables still exist: {tables}"
 
 
-from neo4j import GraphDatabase
-
 def neo4j_init(uri="bolt://localhost:7687", user="neo4j", password="password"):
+    """
+    Initializes a connection to the Neo4j database.
+
+    Args:
+        uri (str): The URI of the Neo4j instance (default is "bolt://localhost:7687").
+        user (str): The username for the Neo4j database (default is "neo4j").
+        password (str): The password for the Neo4j database (default is "password").
+
+    Returns:
+        driver (neo4j.Driver): The Neo4j driver object.
+    """
     try:
+        # Create the driver
         driver = GraphDatabase.driver(uri, auth=(user, password))
-        print("Connected to Neo4j!")
+        
+        # Test the connection
+        with driver.session() as session:
+            session.run("RETURN 'Neo4j connection successful!' AS message")
+        
+        print("Neo4j connection initialized successfully.")
         return driver
     except Exception as e:
-        print(f"Error connecting to Neo4j: {e}")
+        print(f"Failed to initialize Neo4j connection: {e}")
         return None
 
 
+
 def neo4j_add_relation_user_reviews(driver, user, reviews):
-    (u)->[reviews]->(r)
-    (u)->[reviews]->(r1)
+    pass
 
 def neo4j_add_relation_user_watchlists(driver, user, watchlists):
+    pass
 
+def neo4j_add_relation_actor_movie_cast(driver, actor, movie, director):
+    pass
 
-def neo4j_add_relation_user_subscription(driver, user, sub):
-
+def add_data_to_neo4j(driver, data)->bool:
+    pass
 
 def neo4j_close_sess(driver)->bool:
-
+    pass
 
 def query_1_neo4j(driver, query):
     '''
@@ -93,11 +112,11 @@ def query_3_neo4j(driver, query):
     print() für die query
     '''
 
-'''
-TODO:
-1. Funktionen implementieren
-3. Queries schreiben
-3. Doku in oveleaf
+    '''
+    TODO:
+    1. Funktionen implementieren
+    3. Queries schreiben
+    3. Doku in oveleaf
 
-'''
+    '''
 

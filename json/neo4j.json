@@ -1,0 +1,59 @@
+{
+    "movies": [
+      {
+        "id": 1,
+        "title": "Inception",
+        "release_year": 2010,
+        "rating": 8.8,
+        "genre": "Sci-Fi",
+        "duration": 148
+      },
+      {
+        "id": 3,
+        "title": "Interstellar",
+        "release_year": 2014,
+        "rating": 8.6,
+        "genre": "Sci-Fi",
+        "duration": 169
+      }
+    ],
+    "series": [
+      {
+        "id": 2,
+        "title": "Breaking Bad",
+        "release_year": 2008,
+        "rating": 9.5,
+        "genre": "Crime",
+        "season_count": 5
+      }
+    ],
+    "directors": [
+      {
+        "description": "Director of Inception",
+        "type": "DIRECTOR",
+        "name": "Christopher Nolan",
+        "movie_id": 1
+      },
+      {
+        "description": "Director of Interstellar",
+        "type": "DIRECTOR",
+        "name": "Christopher Nolan",
+        "movie_id": 3
+      }
+    ],
+    "actors": [
+      {
+        "description": "Main actor in Breaking Bad",
+        "type": "ACTOR",
+        "name": "Bryan Cranston",
+        "series_id": 2
+      },
+      {
+        "description": "Supporting actor in Interstellar",
+        "type": "ACTOR",
+        "name": "Matthew McConaughey",
+        "movie_id": 3
+      }
+    ]
+  }
+  
