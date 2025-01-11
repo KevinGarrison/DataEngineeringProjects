@@ -1,4 +1,18 @@
-from utils import setup, drop_all_tables, neo4j_init
+from utils import (
+    setup,
+    drop_all_tables,
+    neo4j_init,
+    neo4j_add_relation_actor_movie_cast,
+    check_data_in_db,
+    neo4j_add_relation_user_reviews,
+    neo4j_add_relation_user_watchlists,
+    find_reviews_for_movie,
+    find_users_for_movie,
+    find_watchlist_for_user,
+    check_all_data,
+    check_reviews_and_relationships,
+    get_all_reviews_for_movie
+)
 import populate_data as ppd
 import print_data as prd
 from queries import Queries
@@ -36,6 +50,24 @@ if __name__ == "__main__":
     driver = neo4j_init(uri="bolt://localhost:7687")
 
     print(driver)
+
+    #neo4j_add_relation_actor_movie_cast(driver)
+
+    #check_data_in_db(driver)
+
+    #neo4j_add_relation_user_watchlists(driver=driver)
+
+    #neo4j_add_relation_user_reviews(driver=driver)
+
+    #find_reviews_for_movie(driver, movie_id=1)
+    #find_watchlist_for_user(driver, user_id=1)
+    #find_users_for_movie(driver, movie_id=2)
+    #check_all_data(driver)
+    #check_reviews_and_relationships(driver=driver)
+    #get_all_reviews_for_movie(driver, 1)
+
+
+
 
 
 

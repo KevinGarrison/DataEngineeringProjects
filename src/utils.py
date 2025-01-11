@@ -82,99 +82,234 @@ def neo4j_init(uri): # DONE
 
 
 
-def neo4j_add_relation_user_reviews(driver, user, reviews):
-    pass
+def neo4j_add_relation_user_reviews(driver):
+    """
+    Adds a user and their reviews to the Neo4j database.
 
-def neo4j_add_relation_user_watchlists(driver, user, watchlists):
-    pass
+    Args:
+        driver (neo4j.Driver): The Neo4j driver object.
+    """
+    user = {"user_id": 1, "name": "John Doe", "email": "johndoe@example.com"}
+    reviews = [
+        {"review_id": 101, "movie_id": 1, "review_text": "Amazing movie!", "rating": 9},
+        {"review_id": 102, "movie_id": 2, "review_text": "Incredible visuals!", "rating": 8}
+    ]
+
+    user_query = f"""
+    MERGE (:User {{user_id: {user['user_id']}, name: '{user['name']}', email: '{user['email']}'}})
+    """
+
+    review_queries = []
+    for review in reviews:
+        review_queries.append(f"""
+        MATCH (m:Movie {{id: {review['movie_id']}}})
+        CREATE (:Review {{review_id: {review['review_id']}, review_text: '{review['review_text']}', rating: {review['rating']}}})-[:REVIEWS]->(m)
+        """)
+
+    with driver.session() as session:
+        # Create User
+        session.run(user_query)
+
+        # Create Reviews and Link to Movies
+        for query in review_queries:
+            session.run(query)
+
+    print("User and their reviews have been added to the Neo4j database.")
+
+def neo4j_add_relation_user_watchlists(driver):
+    """
+    Adds a user and their watchlists to the Neo4j database.
+
+    Args:
+        driver (neo4j.Driver): The Neo4j driver object.
+    """
+    user = {"user_id": 1, "name": "John Doe", "email": "johndoe@example.com"}
+    watchlists = [
+        {"watch_id": 201, "movie_id": 1},
+        {"watch_id": 202, "movie_id": 2}
+    ]
+
+    user_query = f"""
+    MERGE (:User {{user_id: {user['user_id']}, name: '{user['name']}', email: '{user['email']}'}})
+    """
+
+    watchlist_queries = []
+    for watchlist in watchlists:
+        watchlist_queries.append(f"""
+        MATCH (u:User {{user_id: {user['user_id']}}}), (m:Movie {{id: {watchlist['movie_id']}}})
+        CREATE (:Watchlist {{watch_id: {watchlist['watch_id']}}})-[:WATCHED_BY]->(u)-[:WATCHLIST]->(m)
+        """)
+
+    with driver.session() as session:
+        # Create or Match User
+        session.run(user_query)
+
+        # Create Watchlist Relationships
+        for query in watchlist_queries:
+            session.run(query)
+
+    print("User and their watchlist have been added to the Neo4j database.")
+
 
 def neo4j_add_relation_actor_movie_cast(driver):
+    # Queries for Movies, Actors, Directors, and Relationships
+    movie_queries = [
+        "CREATE (:Movie {id: 1, title: 'Inception', release_year: 2010, rating: 8.8, genre: 'Sci-Fi', duration: 148})",
+        "CREATE (:Movie {id: 2, title: 'Interstellar', release_year: 2014, rating: 8.6, genre: 'Sci-Fi', duration: 169})"
+    ]
+
+    actor_queries = [
+        "CREATE (:Actor {description: 'Main actor in Inception', type: 'ACTOR', name: 'Leonardo DiCaprio', movie_id: 1})",
+        "CREATE (:Actor {description: 'Main actor in Interstellar', type: 'ACTOR', name: 'Matthew McConaughey', movie_id: 2})",
+        "CREATE (:Actor {description: 'Supporting actor in Interstellar', type: 'ACTOR', name: 'Anne Hathaway', movie_id: 2})"
+    ]
+
+    director_queries = [
+        "CREATE (:Director {description: 'Director of Inception', type: 'DIRECTOR', name: 'Christopher Nolan', movie_id: 1})",
+        "CREATE (:Director {description: 'Director of Interstellar', type: 'DIRECTOR', name: 'Christopher Nolan', movie_id: 2})"
+    ]
+
+    relationship_queries = [
+        "MATCH (d:Director {movie_id: 1}), (m:Movie {id: 1}) CREATE (d)-[:DIRECTED]->(m)",
+        "MATCH (d:Director {movie_id: 2}), (m:Movie {id: 2}) CREATE (d)-[:DIRECTED]->(m)",
+        "MATCH (a:Actor {movie_id: 1}), (m:Movie {id: 1}) CREATE (a)-[:ACTED_IN]->(m)",
+        "MATCH (a:Actor {movie_id: 2}), (m:Movie {id: 2}) CREATE (a)-[:ACTED_IN]->(m)"
+    ]
+
+    # Execute Queries
     with driver.session() as session:
-        
-        query_movie="""
-                CREATE (:Movie {id: 123, title: $title, release_year: $release_year, 
-                                rating: $rating, genre: $genre, duration: $duration})
-            """
+        for query in movie_queries:
+            session.run(query)
 
-        session.run(query_movie)
+        for query in actor_queries:
+            session.run(query)
 
-        query_actor="""
-                CREATE (:Actor {description: $description, type: $type, 
-                                name: $name, movie_id: $movie_id, series_id: $series_id})
-            """
+        for query in director_queries:
+            session.run(query)
 
-        session.run(query_actor)
+        for query in relationship_queries:
+            session.run(query)
 
-        query_director="""
-                CREATE (:Actor {description: $description, type: $type, 
-                                name: $name, movie_id: $movie_id, series_id: $series_id})
-            """
+    print("All data and relationships have been added to the Neo4j database.")
 
-        session.run(query_director)
+def check_all_data(driver):
+    query = """
+    MATCH (n)
+    RETURN labels(n) AS Labels, n AS Properties
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        for record in result:
+            print(f"Labels: {record['Labels']}, Properties: {record['Properties']}")
 
-
-        
-        
-
-        # Create Directors
-        for director in data["directors"]:
-            session.run("""
-                CREATE (:Director {description: $description, type: $type, 
-                                   name: $name, movie_id: $movie_id})
-            """, director)
-
-        # Create Actors
-        for actor in data["actors"]:
-            session.run("""
-                CREATE (:Actor {description: $description, type: $type, 
-                                name: $name, movie_id: $movie_id, series_id: $series_id})
-            """, actor)
-
-        # Create Relationships
-        session.run("""
-            MATCH (d:Director), (m:Movie)
-            WHERE d.movie_id = m.id
-            CREATE (d)-[:DIRECTED]->(m)
-        """)
-        
-        session.run("""
-            MATCH (a:Actor), (m:Movie)
-            WHERE a.movie_id = m.id
-            CREATE (a)-[:ACTED_IN]->(m)
-        """)
-        
-        session.run("""
-            MATCH (a:Actor), (s:Series)
-            WHERE a.series_id = s.id
-            CREATE (a)-[:ACTED_IN]->(s)
-        """)
-
-def add_data_to_neo4j(driver, data)->bool:
-    pass
 
 def neo4j_close_sess(driver)->bool: #DONE
     driver.close()
 
-def query_1_neo4j(driver, query):
-    '''
-    print() für die query
-    '''
 
-def query_2_neo4j(driver, query):
-   '''
-    print() für die query
-    '''
+def check_data_in_db(driver):
+    with driver.session() as session:
+        # Check movies
+        print("\nMovies in the database:")
+        movies = session.run("""
+            MATCH (m:Movie)
+            RETURN m.id AS ID, m.title AS Title, m.release_year AS ReleaseYear, 
+                   m.rating AS Rating, m.genre AS Genre, m.duration AS Duration
+        """)
+        for record in movies:
+            print(record)
 
-def query_3_neo4j(driver, query):
-    '''
-    print() für die query
-    '''
+        # Check actors
+        print("\nActors in the database:")
+        actors = session.run("""
+            MATCH (a:Actor)
+            RETURN a.name AS Name, a.description AS Description, 
+                   a.type AS Type, a.movie_id AS MovieID
+        """)
+        for record in actors:
+            print(record)
 
-    '''
-    TODO:
-    1. Funktionen implementieren
-    3. Queries schreiben
-    3. Doku in oveleaf
+        # Check directors
+        print("\nDirectors in the database:")
+        directors = session.run("""
+            MATCH (d:Director)
+            RETURN d.name AS Name, d.description AS Description, 
+                   d.type AS Type, d.movie_id AS MovieID
+        """)
+        for record in directors:
+            print(record)
 
-    '''
+        # Check relationships
+        print("\nDirectors and their Movies:")
+        directed = session.run("""
+            MATCH (d:Director)-[:DIRECTED]->(m:Movie)
+            RETURN d.name AS Director, m.title AS Movie
+        """)
+        for record in directed:
+            print(record)
+
+        print("\nActors and their Movies:")
+        acted_in = session.run("""
+            MATCH (a:Actor)-[:ACTED_IN]->(m:Movie)
+            RETURN a.name AS Actor, m.title AS Movie
+        """)
+        for record in acted_in:
+            print(record)
+
+
+def find_reviews_for_movie(driver, movie_id):
+    query = """
+    MATCH (m:Movie {id: $movie_id})<-[:REVIEWS]-(r:Review)<-[:REVIEWS]-(u:User)
+    RETURN m.title AS Movie, r.review_text AS Review, r.rating AS Rating, u.name AS Reviewer, u.email AS Email
+    """
+    with driver.session() as session:
+        result = session.run(query, movie_id=movie_id)
+        for record in result:
+            print(f"Movie: {record['Movie']}, Review: {record['Review']}, Rating: {record['Rating']}, Reviewer: {record['Reviewer']}, Email: {record['Email']}")
+
+
+def find_watchlist_for_user(driver, user_id):
+    query = """
+    MATCH (u:User {user_id: $user_id})-[:WATCHLIST]->(m:Movie)
+    RETURN u.name AS User, m.title AS Movie, m.release_year AS ReleaseYear
+    """
+    with driver.session() as session:
+        result = session.run(query, user_id=user_id)
+        for record in result:
+            print(f"User: {record['User']}, Movie: {record['Movie']}, Release Year: {record['ReleaseYear']}")
+
+
+def find_users_for_movie(driver, movie_id):
+    query = """
+    MATCH (u:User)-[:WATCHLIST]->(m:Movie {id: $movie_id})
+    RETURN m.title AS Movie, u.name AS User, u.email AS Email
+    """
+    with driver.session() as session:
+        result = session.run(query, movie_id=movie_id)
+        for record in result:
+            print(f"Movie: {record['Movie']}, User: {record['User']}, Email: {record['Email']}")
+
+def check_reviews_and_relationships(driver):
+    print('Check')
+    query = """
+    MATCH (u:User)-[:REVIEWS]->(r:Review)-[:REVIEWS]->(m:Movie)
+    RETURN u.name AS User, r.review_id AS ReviewID, r.review_text AS Review, r.rating AS Rating, m.title AS Movie
+    """
+    with driver.session() as session:
+        print(session)
+        result = session.run(query)
+        for record in result:
+            print(f"User: {record['User']}, ReviewID: {record['ReviewID']}, Review: {record['Review']}, Rating: {record['Rating']}, Movie: {record['Movie']}")
+
+def get_all_reviews_for_movie(driver, review_id):
+    query = """
+    MATCH (r:Review {review_id: $review_id})-[:REVIEWS]->(m:Movie)<-[:REVIEWS]-(otherReviews:Review)<-[:REVIEWS]-(u:User)
+    RETURN m.title AS Movie, u.name AS Reviewer, otherReviews.review_text AS Review, otherReviews.rating AS Rating
+    """
+    with driver.session() as session:
+        result = session.run(query, review_id=review_id)
+        for record in result:
+            print(f"Movie: {record['Movie']}, Reviewer: {record['Reviewer']}, Review: {record['Review']}, Rating: {record['Rating']}")
+
+
 
