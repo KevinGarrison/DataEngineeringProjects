@@ -2,16 +2,16 @@ from utils import (
     setup,
     drop_all_tables,
     neo4j_init,
-    neo4j_add_relation_actor_movie_cast,
+    neo4j_add_relation_actor_movie_director,
     check_data_in_db,
-    neo4j_add_relation_user_reviews,
     neo4j_add_relation_user_watchlists,
-    find_reviews_for_movie,
     find_users_for_movie,
     find_watchlist_for_user,
     check_all_data,
-    check_reviews_and_relationships,
-    get_all_reviews_for_movie
+    clear_database,
+    neo4j_close_sess,
+    neo4j_add_relation_user_review_movie,
+    get_all_reviews
 )
 import populate_data as ppd
 import print_data as prd
@@ -51,28 +51,17 @@ if __name__ == "__main__":
 
     print(driver)
 
-    #neo4j_add_relation_actor_movie_cast(driver)
+    #neo4j_add_relation_actor_movie_director(driver)
+    #neo4j_add_relation_user_review_movie(driver)
+    #neo4j_add_relation_user_watchlists(driver)
 
-    #check_data_in_db(driver)
-
-    #neo4j_add_relation_user_watchlists(driver=driver)
-
-    #neo4j_add_relation_user_reviews(driver=driver)
-
-    #find_reviews_for_movie(driver, movie_id=1)
-    #find_watchlist_for_user(driver, user_id=1)
-    #find_users_for_movie(driver, movie_id=2)
-    #check_all_data(driver)
-    #check_reviews_and_relationships(driver=driver)
-    #get_all_reviews_for_movie(driver, 1)
-
-
-
-
-
-
-
-
+    check_all_data(driver)
+    
+    find_watchlist_for_user(driver, user_id=1)
+    find_users_for_movie(driver, movie_id=2)
+    get_all_reviews(driver)
+    neo4j_close_sess(driver)
+    #clear_database(driver)
 
     '''    database = 'database.db'
 

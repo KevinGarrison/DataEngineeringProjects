@@ -80,41 +80,43 @@ def neo4j_init(uri): # DONE
         print(f"Failed to initialize Neo4j connection: {e}")
         return None
 
-
-
-def neo4j_add_relation_user_reviews(driver):
+def neo4j_add_relation_user_review_movie(driver):
     """
-    Adds a user and their reviews to the Neo4j database.
+    Adds a user and their reviews linked to movies in the Neo4j database.
 
     Args:
         driver (neo4j.Driver): The Neo4j driver object.
     """
     user = {"user_id": 1, "name": "John Doe", "email": "johndoe@example.com"}
     reviews = [
-        {"review_id": 101, "movie_id": 1, "review_text": "Amazing movie!", "rating": 9},
-        {"review_id": 102, "movie_id": 2, "review_text": "Incredible visuals!", "rating": 8}
+        {"review_id": 101, "movie_id": 1, "rating": 9},
+        {"review_id": 102, "movie_id": 2, "rating": 8}
     ]
 
+    # Create or Merge User Node
     user_query = f"""
     MERGE (:User {{user_id: {user['user_id']}, name: '{user['name']}', email: '{user['email']}'}})
     """
 
+    # Create Review Nodes and Link to Movies
     review_queries = []
     for review in reviews:
         review_queries.append(f"""
         MATCH (m:Movie {{id: {review['movie_id']}}})
-        CREATE (:Review {{review_id: {review['review_id']}, review_text: '{review['review_text']}', rating: {review['rating']}}})-[:REVIEWS]->(m)
+        MERGE (r:Review {{review_id: {review['review_id']}, rating: {review['rating']}}})
+        MERGE (r)-[:REVIEWS]->(m)
+        MERGE (:User {{user_id: {user['user_id']}}})-[:REVIEWS]->(r)
         """)
 
     with driver.session() as session:
-        # Create User
+        # Create or Merge User Node
         session.run(user_query)
 
-        # Create Reviews and Link to Movies
+        # Create Reviews and Relationships
         for query in review_queries:
             session.run(query)
 
-    print("User and their reviews have been added to the Neo4j database.")
+    print("User, their reviews, and links to movies have been added to the Neo4j database.")
 
 def neo4j_add_relation_user_watchlists(driver):
     """
@@ -151,7 +153,7 @@ def neo4j_add_relation_user_watchlists(driver):
     print("User and their watchlist have been added to the Neo4j database.")
 
 
-def neo4j_add_relation_actor_movie_cast(driver):
+def neo4j_add_relation_actor_movie_director(driver):
     # Queries for Movies, Actors, Directors, and Relationships
     movie_queries = [
         "CREATE (:Movie {id: 1, title: 'Inception', release_year: 2010, rating: 8.8, genre: 'Sci-Fi', duration: 148})",
@@ -201,7 +203,20 @@ def check_all_data(driver):
         result = session.run(query)
         for record in result:
             print(f"Labels: {record['Labels']}, Properties: {record['Properties']}")
+            print()
 
+
+def clear_database(driver):
+    """
+    Deletes all nodes and relationships from the Neo4j database.
+
+    Args:
+        driver (neo4j.Driver): The Neo4j driver object.
+    """
+    query = "MATCH (n) DETACH DELETE n"
+    with driver.session() as session:
+        session.run(query)
+    print("All data has been deleted from the Neo4j database.")
 
 def neo4j_close_sess(driver)->bool: #DONE
     driver.close()
@@ -257,17 +272,6 @@ def check_data_in_db(driver):
             print(record)
 
 
-def find_reviews_for_movie(driver, movie_id):
-    query = """
-    MATCH (m:Movie {id: $movie_id})<-[:REVIEWS]-(r:Review)<-[:REVIEWS]-(u:User)
-    RETURN m.title AS Movie, r.review_text AS Review, r.rating AS Rating, u.name AS Reviewer, u.email AS Email
-    """
-    with driver.session() as session:
-        result = session.run(query, movie_id=movie_id)
-        for record in result:
-            print(f"Movie: {record['Movie']}, Review: {record['Review']}, Rating: {record['Rating']}, Reviewer: {record['Reviewer']}, Email: {record['Email']}")
-
-
 def find_watchlist_for_user(driver, user_id):
     query = """
     MATCH (u:User {user_id: $user_id})-[:WATCHLIST]->(m:Movie)
@@ -289,27 +293,30 @@ def find_users_for_movie(driver, movie_id):
         for record in result:
             print(f"Movie: {record['Movie']}, User: {record['User']}, Email: {record['Email']}")
 
-def check_reviews_and_relationships(driver):
-    print('Check')
+
+def get_all_reviews(driver):
+    """
+    Retrieves all reviews with user and movie details.
+    
+    Args:
+        driver (neo4j.Driver): The Neo4j driver object.
+    """
     query = """
     MATCH (u:User)-[:REVIEWS]->(r:Review)-[:REVIEWS]->(m:Movie)
-    RETURN u.name AS User, r.review_id AS ReviewID, r.review_text AS Review, r.rating AS Rating, m.title AS Movie
+    RETURN 
+        u.user_id AS ReviewerID,
+        r.review_id AS ReviewID,
+        r.rating AS Rating,
+        m.title AS MovieTitle,
+        m.release_year AS ReleaseYear
+    ORDER BY Rating DESC
     """
     with driver.session() as session:
-        print(session)
         result = session.run(query)
         for record in result:
-            print(f"User: {record['User']}, ReviewID: {record['ReviewID']}, Review: {record['Review']}, Rating: {record['Rating']}, Movie: {record['Movie']}")
-
-def get_all_reviews_for_movie(driver, review_id):
-    query = """
-    MATCH (r:Review {review_id: $review_id})-[:REVIEWS]->(m:Movie)<-[:REVIEWS]-(otherReviews:Review)<-[:REVIEWS]-(u:User)
-    RETURN m.title AS Movie, u.name AS Reviewer, otherReviews.review_text AS Review, otherReviews.rating AS Rating
-    """
-    with driver.session() as session:
-        result = session.run(query, review_id=review_id)
-        for record in result:
-            print(f"Movie: {record['Movie']}, Reviewer: {record['Reviewer']}, Review: {record['Review']}, Rating: {record['Rating']}")
+            print(f"Reviewer: {record['ReviewerID']}, "
+                  f"ReviewID: {record['ReviewID']}, Rating: {record['Rating']}, "
+                  f"MovieTitle: {record['MovieTitle']}, ReleaseYear: {record['ReleaseYear']}")
 
 
 
